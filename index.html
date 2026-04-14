@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>职业能力实训平台 · 酒店管理</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in { animation: fadeIn 0.25s ease forwards; }
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+    .animate-bounce { animation: bounce 0.8s infinite; }
+  </style>
+</head>
+<body class="bg-gray-200">
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useRef, useEffect } = React;
+
+/* ==================== SVG Icons ==================== */
+const Icon = ({ d, size = 24, className = '', fill = 'none', stroke = 'currentColor', strokeWidth = 2, viewBox = '0 0 24 24' }) => (
+  <svg width={size} height={size} viewBox={viewBox} fill={fill} stroke={stroke} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>{Array.isArray(d) ? d.map((p,i) => <path key={i} d={p}/>) : <path d={d}/>}</svg>
+);
+
+const HomeIcon = ({size=24,className=''}) => <Icon size={size} className={className} d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10"/>;
+const MessageCircle = ({size=24,className=''}) => <Icon size={size} className={className} d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>;
+const PlaySquare = ({size=24,className=''}) => <Icon size={size} className={className} d={["M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6z","M10 9l5 3-5 3V9z"]}/>;
+const Briefcase = ({size=24,className=''}) => <Icon size={size} className={className} d={["M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z","M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"]}/>;
+const UserIcon = ({size=24,className=''}) => <Icon size={size} className={className} d={["M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2","M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"]}/>;
+const Search = ({size=24,className=''}) => <Icon size={size} className={className} d={["M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z","M21 21l-4.35-4.35"]}/>;
+const ChevronRight = ({size=24,className=''}) => <Icon size={size} className={className} d="M9 18l6-6-6-6"/>;
+const Star = ({size=24,className=''}) => <Icon size={size} className={className} d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>;
+const Send = ({size=24,className=''}) => <Icon size={size} className={className} d={["M22 2L11 13","M22 2l-7 20-4-9-9-4 20-7z"]}/>;
+const BookOpen = ({size=24,className=''}) => <Icon size={size} className={className} d={["M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z","M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"]}/>;
+const Award = ({size=24,className=''}) => <Icon size={size} className={className} d={["M12 15a7 7 0 1 0 0-14 7 7 0 0 0 0 14z","M8.21 13.89L7 23l5-3 5 3-1.21-9.12"]}/>;
+const TrendingUp = ({size=24,className=''}) => <Icon size={size} className={className} d={["M23 6l-9.5 9.5-5-5L1 18","M17 6h6v6"]}/>;
+const CheckCircle = ({size=24,className=''}) => <Icon size={size} className={className} d={["M22 11.08V12a10 10 0 1 1-5.93-9.14","M22 4L12 14.01l-3-3"]}/>;
+const Clock = ({size=24,className=''}) => <Icon size={size} className={className} d={["M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z","M12 6v6l4 2"]}/>;
+const MapPin = ({size=24,className=''}) => <Icon size={size} className={className} d={["M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z","M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"]}/>;
+
+/* ==================== App ==================== */
+const App = () => {
+  const [activeTab, setActiveTab] = useState('home');
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gray-200 p-4">
+      <div className="w-[393px] h-[852px] bg-gray-50 rounded-[50px] shadow-2xl overflow-hidden flex flex-col relative border-[8px] border-black ring-1 ring-gray-300">
+        {/* 状态栏 */}
+        <div className="absolute top-0 w-full h-14 flex justify-between items-end px-7 pb-2 text-[14px] font-semibold text-gray-800 z-50 pointer-events-none">
+          <span className="mb-1 text-gray-900 tracking-tight">09:41</span>
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 w-[120px] h-[32px] bg-black rounded-full z-50"></div>
+          <div className="flex space-x-1.5 items-center mb-1">
+            <div className="flex items-end space-x-[2px] h-3">
+              <div className="w-[3px] h-1.5 bg-gray-900 rounded-sm"></div>
+              <div className="w-[3px] h-2 bg-gray-900 rounded-sm"></div>
+              <div className="w-[3px] h-2.5 bg-gray-900 rounded-sm"></div>
+              <div className="w-[3px] h-3 bg-gray-900 rounded-sm"></div>
+            </div>
+            <svg className="w-[15px] h-[15px] text-gray-900 mb-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21L15.6 16.2C14.6 15.45 13.35 15 12 15C10.65 15 9.4 15.45 8.4 16.2L12 21ZM12 3C7.95 3 4.21 4.34 1.2 6.6L3 9C5.5 7.12 8.62 6 12 6C15.38 6 18.5 7.12 21 9L22.8 6.6C19.79 4.34 16.05 3 12 3ZM12 9C9.3 9 6.81 9.89 4.8 11.4L6.6 13.8C8.1 12.67 9.97 12 12 12C14.03 12 15.9 12.67 17.4 13.8L19.2 11.4C17.19 9.89 14.7 9 12 9Z"/></svg>
+            <div className="w-6 h-3 border border-gray-900 rounded-[3px] p-[1px] relative flex items-center">
+              <div className="bg-gray-900 h-full w-[85%] rounded-[1px]"></div>
+              <div className="absolute -right-1 top-1 w-[2px] h-1 bg-gray-900 rounded-r-sm"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* 内容区 */}
+        <div className="flex-1 overflow-y-auto pb-[90px] bg-gray-50 no-scrollbar">
+          {activeTab === 'home' && <HomeView setActiveTab={setActiveTab} />}
+          {activeTab === 'tutor' && <TutorView />}
+          {activeTab === 'roleplay' && <RoleplayView />}
+          {activeTab === 'jobs' && <JobsView />}
+          {activeTab === 'profile' && <ProfileView />}
+        </div>
+
+        {/* 底部导航 */}
+        <div className="absolute bottom-0 w-full h-[84px] bg-white border-t border-gray-100 flex justify-around items-start pt-2 px-2 pb-6 z-40">
+          <NavItem icon={<HomeIcon size={24}/>} label="首页" active={activeTab==='home'} onClick={()=>setActiveTab('home')}/>
+          <NavItem icon={<MessageCircle size={24}/>} label="AI导师" active={activeTab==='tutor'} onClick={()=>setActiveTab('tutor')}/>
+          <NavItem icon={<PlaySquare size={24}/>} label="实训" active={activeTab==='roleplay'} onClick={()=>setActiveTab('roleplay')}/>
+          <NavItem icon={<Briefcase size={24}/>} label="就业" active={activeTab==='jobs'} onClick={()=>setActiveTab('jobs')}/>
+          <NavItem icon={<UserIcon size={24}/>} label="我的" active={activeTab==='profile'} onClick={()=>setActiveTab('profile')}/>
+        </div>
+
+        {/* Home bar */}
+        <div className="absolute bottom-2 w-full flex justify-center z-50 pointer-events-none">
+          <div className="w-[134px] h-[5px] bg-black rounded-full"></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ==================== HomeView ==================== */
+const HomeView = ({ setActiveTab }) => (
+  <div className="animate-fade-in flex flex-col h-full">
+    <div className="bg-blue-600 rounded-b-3xl pt-14 px-6 pb-10 text-white">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-xl font-bold">早安，李同学</h1>
+          <p className="text-sm text-blue-200 mt-1">2023级 酒店管理专业</p>
+        </div>
+        <div className="w-12 h-12 bg-white rounded-full border-2 border-blue-300 flex items-center justify-center text-blue-600 font-bold text-lg">李</div>
+      </div>
+      <div className="bg-white/20 rounded-full px-4 py-2 flex items-center mb-4 backdrop-blur-sm">
+        <Search size={18} className="text-white/80 mr-2"/>
+        <input type="text" placeholder="搜索知识点、案例或提问..." className="bg-transparent text-white placeholder-white/70 text-sm focus:outline-none w-full"/>
+      </div>
+    </div>
+
+    <div className="px-4 -mt-6">
+      <div className="bg-white rounded-2xl shadow-sm p-4 grid grid-cols-4 gap-4 mb-6">
+        <ActionBtn icon={<BookOpen size={22} className="text-blue-500"/>} label="专业课程"/>
+        <ActionBtn icon={<MessageCircle size={22} className="text-purple-500"/>} label="AI答疑" onClick={()=>setActiveTab('tutor')}/>
+        <ActionBtn icon={<PlaySquare size={22} className="text-orange-500"/>} label="角色实训" onClick={()=>setActiveTab('roleplay')}/>
+        <ActionBtn icon={<Award size={22} className="text-green-500"/>} label="在线测验"/>
+      </div>
+
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-lg font-bold text-gray-800">继续学习</h2>
+          <span className="text-xs text-gray-500 flex items-center">全部课程<ChevronRight size={14}/></span>
+        </div>
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center">
+          <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+            <BookOpen size={28} className="text-blue-600"/>
+          </div>
+          <div className="flex-1">
+            <h3 className="font-bold text-gray-800">酒店前厅运营与管理</h3>
+            <p className="text-xs text-gray-500 mt-1">第三章：客诉处理标准化流程</p>
+            <div className="mt-3 bg-gray-100 h-1.5 rounded-full overflow-hidden">
+              <div className="bg-blue-600 h-full w-2/3 rounded-full"></div>
+            </div>
+            <p className="text-[10px] text-gray-400 mt-1 text-right">已学 65%</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-lg font-bold text-gray-800">猜你适合</h2>
+          <span className="text-xs text-gray-500 flex items-center cursor-pointer" onClick={()=>setActiveTab('jobs')}>更多推荐<ChevronRight size={14}/></span>
+        </div>
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-4 border border-blue-100">
+          <div className="flex justify-between items-start">
+            <div>
+              <span className="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded uppercase font-bold tracking-wider mb-2 inline-block">匹配度 98%</span>
+              <h3 className="font-bold text-gray-800">万豪酒店 - 前台管家 (实习)</h3>
+              <p className="text-xs text-gray-600 mt-1 flex items-center"><MapPin size={12} className="mr-1"/>深圳 · 南山区</p>
+            </div>
+            <div className="text-blue-600 font-bold text-sm">3K-4K/月</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+/* ==================== TutorView ==================== */
+const TutorView = () => {
+  const [messages, setMessages] = useState([{
+    role:'assistant', type:'welcome',
+    content:'你好，我是你的AI专业导师。无论是在课堂学习中遇到理论难点，还是在实训中遇到棘手的行业案例，都可以随时问我。'
+  }]);
+  const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef(null);
+  useEffect(() => { messagesEndRef.current?.scrollIntoView({behavior:'smooth'}); }, [messages]);
+
+  const handleSend = () => {
+    if (!input.trim()) return;
+    setMessages(prev=>[...prev,{role:'user',content:input}]);
+    setInput(''); setIsTyping(true);
+    setTimeout(()=>{
+      setIsTyping(false);
+      setMessages(prev=>[...prev,{
+        role:'assistant', type:'3d-answer',
+        academic:'根据《酒店服务管理学》，客诉处理需遵循LEARN模型：Listen(倾听)、Empathize(共情)、Apologize(道歉)、React(响应)、Notify(跟进)。核心原则是先处理情绪，再处理问题。',
+        industry:'在真实的五星级酒店运营中，面对情绪激动的客人，一线员工的权限往往有限。行业通用做法是：第一时间隔离视线（请客人到VIP室或安静区域），奉上热茶安抚，并立刻呼叫大堂经理（MOD）介入，避免在公共区域造成不良影响。',
+        career:'优秀的客诉处理能力是晋升前厅经理或宾客关系经理（GRO）的核心考核指标。建议你在日常实训中，多记录极端案例的处理话术，这将成为你面试顶级酒店时的极大加分项。'
+      }]);
+    },1500);
+  };
+
+  return (
+    <div className="flex flex-col h-full bg-gray-50">
+      <div className="bg-white pt-14 pb-3 px-4 shadow-sm z-10 text-center sticky top-0">
+        <h2 className="text-lg font-bold text-gray-800">全能AI导师</h2>
+        <p className="text-xs text-gray-500">学术 · 产业 · 规划 三维解析</p>
+      </div>
+      <div className="flex-1 p-4 overflow-y-auto no-scrollbar">
+        {messages.map((msg,idx)=>(
+          <div key={idx} className={`mb-6 flex ${msg.role==='user'?'justify-end':'justify-start'}`}>
+            {msg.role==='assistant' && (
+              <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white mr-2 flex-shrink-0">
+                <MessageCircle size={16}/>
+              </div>
+            )}
+            <div className={`max-w-[85%] ${msg.role==='user'?'bg-blue-600 text-white rounded-2xl rounded-tr-sm p-3':''}`}>
+              {msg.type==='welcome' && (
+                <div className="bg-white border border-gray-100 rounded-2xl rounded-tl-sm p-4 shadow-sm text-sm text-gray-700">
+                  {msg.content}
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded-full text-xs cursor-pointer" onClick={()=>setInput('客人坚持要求晚上6点退房怎么办？')}>"客人坚持要求晚上6点退房？"</span>
+                    <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded-full text-xs cursor-pointer" onClick={()=>setInput('前台实习生转正考核什么？')}>"前台实习生考核要点？"</span>
+                  </div>
+                </div>
+              )}
+              {msg.role==='user' && <div className="text-sm">{msg.content}</div>}
+              {msg.type==='3d-answer' && <ThreeDTutorResponse data={msg}/>}
+            </div>
+          </div>
+        ))}
+        {isTyping && (
+          <div className="flex justify-start mb-6">
+            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white mr-2"><MessageCircle size={16}/></div>
+            <div className="bg-white border border-gray-100 rounded-2xl rounded-tl-sm p-4 shadow-sm flex items-center space-x-1">
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay:'0.2s'}}></div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay:'0.4s'}}></div>
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef}/>
+      </div>
+      <div className="bg-white p-3 border-t border-gray-200 sticky bottom-0">
+        <div className="flex items-center bg-gray-100 rounded-full px-4 py-2">
+          <input type="text" value={input} onChange={e=>setInput(e.target.value)} onKeyPress={e=>e.key==='Enter'&&handleSend()} placeholder="输入您的问题..." className="bg-transparent flex-1 focus:outline-none text-sm text-gray-700"/>
+          <button onClick={handleSend} disabled={!input.trim()} className={`ml-2 p-1.5 rounded-full ${input.trim()?'bg-blue-600 text-white':'bg-gray-300 text-gray-500'}`}><Send size={16}/></button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ThreeDTutorResponse = ({data}) => {
+  const [activeSubTab, setActiveSubTab] = useState('academic');
+  const tabs = [
+    {id:'academic',label:'学术导师',icon:<BookOpen size={14}/>},
+    {id:'industry',label:'产业导师',icon:<Briefcase size={14}/>},
+    {id:'career',label:'职业规划',icon:<TrendingUp size={14}/>},
+  ];
+  return (
+    <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm shadow-sm overflow-hidden w-full text-sm">
+      <div className="flex border-b border-gray-100">
+        {tabs.map(tab=>(
+          <button key={tab.id} onClick={()=>setActiveSubTab(tab.id)}
+            className={`flex-1 flex items-center justify-center py-2.5 text-xs font-medium transition-colors ${activeSubTab===tab.id?'bg-blue-50 text-blue-700 border-b-2 border-blue-600':'text-gray-500 hover:bg-gray-50'}`}>
+            <span className="mr-1">{tab.icon}</span>{tab.label}
+          </button>
+        ))}
+      </div>
+      <div className="p-4 text-gray-700 leading-relaxed min-h-[120px]">
+        {activeSubTab==='academic' && <div className="animate-fade-in"><span className="font-bold text-blue-800 mb-2 block">【理论视角】</span>{data.academic}</div>}
+        {activeSubTab==='industry' && <div className="animate-fade-in"><span className="font-bold text-orange-600 mb-2 block">【实战经验】</span>{data.industry}</div>}
+        {activeSubTab==='career'   && <div className="animate-fade-in"><span className="font-bold text-purple-600 mb-2 block">【发展建议】</span>{data.career}</div>}
+      </div>
+    </div>
+  );
+};
+
+/* ==================== RoleplayView ==================== */
+const RoleplayView = () => {
+  const [viewState, setViewState] = useState('list');
+  if (viewState==='active') return <ActiveRoleplay setViewState={setViewState}/>;
+  if (viewState==='feedback') return <RoleplayFeedback setViewState={setViewState}/>;
+  return (
+    <div className="flex flex-col h-full bg-gray-50">
+      <div className="bg-white pt-14 pb-3 px-4 shadow-sm z-10">
+        <h2 className="text-lg font-bold text-gray-800">情景实训</h2>
+        <p className="text-xs text-gray-500">沉浸式角色扮演 · AI实时评测</p>
+      </div>
+      <div className="p-4">
+        <div className="flex space-x-2 mb-4 overflow-x-auto pb-2 no-scrollbar">
+          <span className="bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm whitespace-nowrap cursor-pointer">前厅部</span>
+          <span className="bg-white text-gray-600 border border-gray-200 px-4 py-1.5 rounded-full text-sm whitespace-nowrap cursor-pointer">客房部</span>
+          <span className="bg-white text-gray-600 border border-gray-200 px-4 py-1.5 rounded-full text-sm whitespace-nowrap cursor-pointer">餐饮部</span>
+        </div>
+        <div className="space-y-4">
+          <ScenarioCard title="接待暴躁的商务客人" desc="模拟场景：客人因航班延误凌晨抵达，发现预订房型被降级，情绪极度激动。" tags={['客诉处理','情绪安抚','高难度']} role="前台接待员" aiRole="王总 (商务精英)" onStart={()=>setViewState('active')}/>
+          <ScenarioCard title="外籍客人入住办理" desc="模拟场景：接待一位只会说英语的首次访华客人，需核对护照并介绍酒店设施。" tags={['跨文化沟通','SOP流程']} role="前台接待员" aiRole="Mr. Smith (游客)"/>
+          <ScenarioCard title="团队入住突发状况" desc="模拟场景：旅游团到达，但导游提供的排房名单与系统不符，大堂拥挤。" tags={['团队接待','应急处理']} role="大堂副理" aiRole="李导 (旅行社)"/>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ScenarioCard = ({title,desc,tags,role,aiRole,onStart}) => (
+  <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+    <div className="flex justify-between items-start mb-2">
+      <h3 className="font-bold text-gray-800 text-base">{title}</h3>
+      <span className="bg-red-50 text-red-600 text-[10px] px-2 py-0.5 rounded font-bold">必修实训</span>
+    </div>
+    <p className="text-xs text-gray-500 mb-3 leading-relaxed">{desc}</p>
+    <div className="flex space-x-2 mb-4">
+      {tags.map(tag=><span key={tag} className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">{tag}</span>)}
+    </div>
+    <div className="flex justify-between items-center border-t border-gray-50 pt-3">
+      <div className="flex text-xs items-center text-gray-600">
+        <UserIcon size={12} className="mr-1"/>扮演: <span className="font-bold text-blue-600 ml-1">{role}</span>
+      </div>
+      <button onClick={onStart} className="bg-blue-600 text-white text-xs px-4 py-1.5 rounded-full font-medium shadow-md shadow-blue-200 active:scale-95 transition-all">开始演练</button>
+    </div>
+  </div>
+);
+
+const ActiveRoleplay = ({setViewState}) => {
+  const [messages, setMessages] = useState([
+    {role:'system',content:'实训开始！你现在的身份是前台接待员。客人王总（AI扮演）气冲冲地走向前台...'},
+    {role:'ai',content:'你们搞什么鬼？我大半夜的航班晚点已经够烦了，现在告诉我我订的行政套房没了？降级成大床房？把你们经理叫出来！'}
+  ]);
+  const [input,setInput]=useState('');
+  const [turn,setTurn]=useState(1);
+  const handleSend=()=>{
+    if(!input.trim())return;
+    setMessages(prev=>[...prev,{role:'user',content:input}]);
+    setInput('');
+    if(turn>=2){setTimeout(()=>setViewState('feedback'),1500);return;}
+    setTimeout(()=>{
+      setMessages(prev=>[...prev,{role:'ai',content:'我不要听你道歉！我都等了二十分钟了，我就问你现在怎么解决？我明天一早还有个几千万的合同要签，休息不好你们负得起责吗？'}]);
+      setTurn(turn+1);
+    },1000);
+  };
+  return (
+    <div className="flex flex-col h-full bg-gray-900 text-white relative">
+      <div className="pt-14 pb-3 px-4 border-b border-gray-800 bg-gray-900 flex justify-between items-center">
+        <div className="flex items-center">
+          <div className="w-10 h-10 bg-red-900/50 rounded-full border border-red-500/30 flex items-center justify-center mr-3"><UserIcon className="text-red-400" size={20}/></div>
+          <div>
+            <h3 className="font-bold text-sm">王总 (愤怒的客人)</h3>
+            <p className="text-[10px] text-gray-400 flex items-center"><Clock size={10} className="mr-1"/>情绪值: 极差 | 剩余对话轮数: {3-turn}</p>
+          </div>
+        </div>
+        <button onClick={()=>setViewState('list')} className="text-gray-400 text-xs">退出</button>
+      </div>
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
+        {messages.map((msg,idx)=>(
+          <div key={idx} className={`flex ${msg.role==='user'?'justify-end':'justify-start'}`}>
+            {msg.role==='system' && <div className="w-full text-center my-2"><span className="bg-gray-800 text-gray-400 text-xs px-3 py-1 rounded-full">{msg.content}</span></div>}
+            {msg.role==='ai' && <div className="bg-gray-800 text-gray-100 rounded-2xl rounded-tl-none p-3 max-w-[80%] text-sm border border-gray-700 shadow-lg">{msg.content}</div>}
+            {msg.role==='user' && <div className="bg-blue-600 text-white rounded-2xl rounded-tr-none p-3 max-w-[80%] text-sm shadow-lg">{msg.content}</div>}
+          </div>
+        ))}
+      </div>
+      <div className="p-4 bg-gray-900 border-t border-gray-800">
+        <div className="text-[10px] text-gray-500 mb-2">实训小提示：先安抚情绪，尝试提出替代补偿方案。</div>
+        <div className="flex items-center bg-gray-800 rounded-xl px-3 py-2 border border-gray-700">
+          <input type="text" value={input} onChange={e=>setInput(e.target.value)} onKeyPress={e=>e.key==='Enter'&&handleSend()} placeholder="作为前台，你要说什么..." className="bg-transparent flex-1 focus:outline-none text-sm text-gray-200"/>
+          <button onClick={handleSend} className={`ml-2 px-3 py-1.5 rounded-lg text-sm font-medium ${input.trim()?'bg-blue-600 text-white':'bg-gray-700 text-gray-500'}`}>发送</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const RoleplayFeedback = ({setViewState}) => (
+  <div className="flex flex-col h-full bg-blue-50 overflow-y-auto no-scrollbar">
+    <div className="bg-gradient-to-b from-blue-600 to-blue-800 pt-16 pb-6 px-6 text-center text-white rounded-b-[40px] shadow-lg">
+      <h2 className="text-2xl font-bold mb-1">实训报告</h2>
+      <p className="text-blue-200 text-sm mb-6">接待暴躁的商务客人</p>
+      <div className="w-24 h-24 bg-white rounded-full mx-auto flex items-center justify-center border-4 border-blue-400 shadow-xl relative z-10">
+        <span className="text-4xl font-extrabold text-blue-600">82</span>
+      </div>
+    </div>
+    <div className="px-4 -mt-8 relative z-20 pb-8">
+      <div className="bg-white p-5 rounded-2xl shadow-sm mb-4">
+        <h3 className="font-bold text-gray-800 mb-4 flex items-center"><Award className="text-yellow-500 mr-2" size={18}/>多维度评分</h3>
+        <div className="space-y-3">
+          <ScoreBar label="情绪安抚技巧" score={75} color="bg-orange-500"/>
+          <ScoreBar label="服务SOP遵循" score={90} color="bg-green-500"/>
+          <ScoreBar label="危机处理灵活性" score={80} color="bg-blue-500"/>
+          <ScoreBar label="专业话术规范" score={85} color="bg-purple-500"/>
+        </div>
+      </div>
+      <div className="bg-white p-5 rounded-2xl shadow-sm mb-4">
+        <h3 className="font-bold text-gray-800 mb-3 flex items-center"><MessageCircle className="text-blue-500 mr-2" size={18}/>AI导师深度点评</h3>
+        <div className="text-sm text-gray-600 leading-relaxed space-y-3">
+          <p><span className="font-bold text-green-600">优点：</span>你在对话初期表现得很冷静，没有与客人发生正面冲突，并且准确地提出了赔偿免费早餐的方案，SOP流程执行到位。</p>
+          <p><span className="font-bold text-red-500">不足：</span>当客人情绪二次爆发，提及"千万合同"施压时，你的回答略显慌乱，仍在重复道歉，缺乏"隔离视线"和"请求支援"的意识。</p>
+          <div className="bg-blue-50 p-3 rounded-xl border border-blue-100 mt-2 text-blue-800 text-xs">
+            <span className="font-bold block mb-1">💡 优化话术建议：</span>
+            "王总，我非常理解您的着急，影响您明天的会议我们万分抱歉。这里是大堂人多嘈杂，不如我先带您到VIP休息室用杯热茶，我已经呼叫了值班大堂经理，他马上带着具体解决方案过来亲自向您致歉。您看可以吗？"
+          </div>
+        </div>
+      </div>
+      <button onClick={()=>setViewState('list')} className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-blue-200">完成并返回列表</button>
+    </div>
+  </div>
+);
+
+const ScoreBar = ({label,score,color}) => (
+  <div className="flex items-center text-xs">
+    <div className="w-24 text-gray-600">{label}</div>
+    <div className="flex-1 bg-gray-100 h-2 rounded-full overflow-hidden mx-2"><div className={`h-full ${color}`} style={{width:`${score}%`}}></div></div>
+    <div className="w-6 text-right font-bold text-gray-700">{score}</div>
+  </div>
+);
+
+/* ==================== JobsView ==================== */
+const JobsView = () => (
+  <div className="flex flex-col h-full bg-gray-50">
+    <div className="bg-white pt-14 pb-4 px-4 shadow-sm sticky top-0 z-10">
+      <h2 className="text-lg font-bold text-gray-800">智能就业对接</h2>
+      <p className="text-xs text-gray-500 mt-1">基于您的学习画像生成的个性化推荐</p>
+    </div>
+    <div className="p-4">
+      <div className="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-4 text-white shadow-md mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <div className="font-medium text-sm">你的职业技能画像</div>
+          <div className="text-xs bg-white/20 px-2 py-1 rounded border border-white/30">评估库更新于今天</div>
+        </div>
+        <div className="flex flex-wrap gap-2 mb-2">
+          <span className="bg-white text-blue-700 px-2 py-1 rounded text-xs font-bold shadow-sm">客诉处理 (优)</span>
+          <span className="bg-white text-blue-700 px-2 py-1 rounded text-xs font-bold shadow-sm">前台SOP执行 (良)</span>
+          <span className="bg-white/20 text-white px-2 py-1 rounded text-xs border border-white/40">宴会策划 (待提升)</span>
+        </div>
+        <p className="text-[10px] text-indigo-100 mt-3 border-t border-indigo-500/50 pt-2">AI评语：极具服务意识，情绪稳定性高，推荐优先应聘前厅部或宾客关系岗。</p>
+      </div>
+      <h3 className="font-bold text-gray-800 mb-3 ml-1 text-sm">高匹配度岗位推荐</h3>
+      <div className="space-y-4">
+        <JobCard title="前台管家 (储备干部)" company="万豪国际酒店" location="深圳" salary="4K-6K" match={98} tags={['五星级','包食宿','转正机会大']}/>
+        <JobCard title="宾客关系主任 (GRO)" company="洲际酒店集团" location="广州" salary="5K-7K" match={92} tags={['英语环境','高端人脉','年底双薪']}/>
+        <JobCard title="行政酒廊服务专员" company="香格里拉大酒店" location="深圳" salary="4.5K-6K" match={85} tags={['排班规律','系统培训']}/>
+      </div>
+    </div>
+  </div>
+);
+
+const JobCard = ({title,company,location,salary,match,tags}) => (
+  <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 relative overflow-hidden">
+    <div className="absolute top-0 right-0 bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1 rounded-bl-xl">匹配度 {match}%</div>
+    <h3 className="font-bold text-gray-800 text-base mb-1 w-4/5">{title}</h3>
+    <div className="flex justify-between items-center mb-3">
+      <span className="text-sm text-gray-600">{company}</span>
+      <span className="font-bold text-orange-500 text-sm">{salary}</span>
+    </div>
+    <div className="flex space-x-2 mb-4">
+      <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded flex items-center"><MapPin size={10} className="mr-1"/>{location}</span>
+      {tags.map(tag=><span key={tag} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">{tag}</span>)}
+    </div>
+    <div className="flex justify-between items-center pt-3 border-t border-gray-50">
+      <div className="text-[10px] text-gray-400">基于你的【客诉处理】高分推荐</div>
+      <button className="bg-blue-600 text-white text-xs px-5 py-1.5 rounded-full font-medium shadow-sm">一键投递</button>
+    </div>
+  </div>
+);
+
+/* ==================== ProfileView ==================== */
+const ProfileView = () => (
+  <div className="flex flex-col h-full bg-gray-50">
+    <div className="bg-blue-600 pt-16 pb-20 px-6 text-white text-center rounded-b-[40px]">
+      <div className="w-20 h-20 bg-white rounded-full mx-auto flex items-center justify-center text-blue-600 font-bold text-3xl mb-3 border-4 border-blue-400">李</div>
+      <h2 className="text-xl font-bold">李同学</h2>
+      <p className="text-blue-200 text-sm mt-1">计算机与旅游学院 · 酒店管理专业</p>
+    </div>
+    <div className="px-4 -mt-12 space-y-4">
+      <div className="bg-white p-4 rounded-2xl shadow-sm flex justify-around items-center">
+        <div className="text-center"><div className="text-xl font-bold text-gray-800">42<span className="text-xs text-gray-500 font-normal ml-1">小时</span></div><div className="text-xs text-gray-500">学习时长</div></div>
+        <div className="w-px h-8 bg-gray-100"></div>
+        <div className="text-center"><div className="text-xl font-bold text-gray-800">15<span className="text-xs text-gray-500 font-normal ml-1">次</span></div><div className="text-xs text-gray-500">实训通关</div></div>
+        <div className="w-px h-8 bg-gray-100"></div>
+        <div className="text-center"><div className="text-xl font-bold text-gray-800">8<span className="text-xs text-gray-500 font-normal ml-1">门</span></div><div className="text-xs text-gray-500">完成课程</div></div>
+      </div>
+      <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <ProfileListItem icon={<BookOpen size={18} className="text-blue-500"/>} title="我的课程"/>
+        <ProfileListItem icon={<Star size={18} className="text-yellow-500"/>} title="错题与收藏"/>
+        <ProfileListItem icon={<CheckCircle size={18} className="text-green-500"/>} title="能力评估报告"/>
+        <ProfileListItem icon={<Briefcase size={18} className="text-orange-500"/>} title="投递记录"/>
+      </div>
+    </div>
+  </div>
+);
+
+const ProfileListItem = ({icon,title}) => (
+  <div className="flex items-center justify-between p-4 border-b border-gray-50 last:border-0 hover:bg-gray-50 cursor-pointer">
+    <div className="flex items-center"><div className="w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center mr-3">{icon}</div><span className="text-sm text-gray-800 font-medium">{title}</span></div>
+    <ChevronRight size={16} className="text-gray-400"/>
+  </div>
+);
+
+/* ==================== 通用组件 ==================== */
+const ActionBtn = ({icon,label,onClick}) => (
+  <div className="flex flex-col items-center cursor-pointer active:scale-95 transition-transform" onClick={onClick}>
+    <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center mb-2 shadow-inner">{icon}</div>
+    <span className="text-[11px] text-gray-700 font-medium">{label}</span>
+  </div>
+);
+
+const NavItem = ({icon,label,active,onClick}) => (
+  <div className={`flex flex-col items-center justify-center w-16 h-full cursor-pointer transition-colors ${active?'text-blue-600':'text-gray-400'}`} onClick={onClick}>
+    <div className={`mb-1 transition-transform duration-300 ${active?'scale-110':''}`}>{icon}</div>
+    <span className={`text-[10px] ${active?'font-bold':'font-medium'}`}>{label}</span>
+  </div>
+);
+
+/* ==================== Mount ==================== */
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App/>);
+</script>
+</body>
+</html>
