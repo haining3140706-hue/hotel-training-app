@@ -1,506 +1,1191 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>职业能力实训平台 · 酒店管理</title>
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-fade-in { animation: fadeIn 0.25s ease forwards; }
-    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-    .animate-bounce { animation: bounce 0.8s infinite; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AI教学知识库 · 学生端</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;background:#dde3f0;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue',sans-serif;display:flex;align-items:center;justify-content:center}
+.phone{width:390px;height:844px;background:#f5f6fa;border-radius:50px;box-shadow:0 40px 100px rgba(0,0,0,.3),inset 0 0 0 2px #ccc;overflow:hidden;display:flex;flex-direction:column;position:relative}
+.statusbar{height:44px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0}
+.statusbar .time{font-size:15px;font-weight:700;color:#111}
+.statusbar .icons{font-size:13px;color:#111;display:flex;gap:4px;align-items:center}
+.app{flex:1;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;background:#f5f6fa;opacity:1;transition:opacity .18s ease}
+.screen.hidden{opacity:0;pointer-events:none}
+.topbar{height:52px;background:#fff;display:flex;align-items:center;padding:0 16px;border-bottom:1px solid #f0f0f0;flex-shrink:0}
+.backbtn{width:36px;height:36px;border-radius:50%;background:#f5f6fa;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.toptitle{flex:1;text-align:center;font-size:17px;font-weight:600;color:#111}
+.topright{width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;background:transparent;font-size:18px}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.scroll::-webkit-scrollbar{display:none}
+.tabbar{height:68px;background:#fff;border-top:1px solid #eee;display:flex;align-items:center;padding-bottom:8px;flex-shrink:0}
+.tabitem{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;padding:6px 0;border:none;background:transparent}
+.tabitem .ticon{font-size:22px}
+.tabitem .tlabel{font-size:10px;font-weight:500;color:#bbb}
+.tabitem.active .tlabel{color:#3B7EF8}
+.card{background:#fff;border-radius:16px;padding:16px;margin:0 16px 12px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.stitle{font-size:16px;font-weight:700;color:#111;padding:16px 16px 10px}
+.btnp{width:100%;height:48px;background:linear-gradient(135deg,#3B7EF8,#5B5EF8);border:none;border-radius:24px;color:#fff;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(59,126,248,.35)}
+.btns{height:36px;padding:0 16px;background:linear-gradient(135deg,#3B7EF8,#5B5EF8);border:none;border-radius:18px;color:#fff;font-size:13px;font-weight:500;cursor:pointer}
+.btno{height:36px;padding:0 16px;background:#f0f4ff;border:none;border-radius:18px;color:#3B7EF8;font-size:13px;font-weight:500;cursor:pointer}
+.tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:500}
+.tb{background:#e8f0fe;color:#3B7EF8}.tg{background:#e6f9f0;color:#22c55e}.to{background:#fff4e6;color:#f97316}.tr{background:#fff0f0;color:#ef4444}
+.pw{width:100%;height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden}
+.pb{height:100%;border-radius:3px;background:linear-gradient(90deg,#3B7EF8,#5B5EF8)}
+.divider{height:8px;background:#f5f6fa}
+.toast{position:absolute;bottom:88px;left:50%;transform:translateX(-50%) translateY(10px);background:rgba(0,0,0,.72);color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;white-space:nowrap;opacity:0;transition:all .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.homehd{background:linear-gradient(135deg,#3B7EF8,#5B5EF8);padding:16px 20px 28px;flex-shrink:0}
+.homehd .greet{font-size:13px;color:rgba(255,255,255,.8);margin-bottom:4px}
+.homehd .uname{font-size:22px;font-weight:700;color:#fff}
+.homehd .usub{font-size:12px;color:rgba(255,255,255,.7);margin-top:2px}
+.banner{background:rgba(255,255,255,.18);border-radius:16px;padding:14px;margin-top:14px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.banner .bicon{font-size:30px}
+.banner .btitle{font-size:14px;font-weight:600;color:#fff}
+.banner .bsub{font-size:11px;color:rgba(255,255,255,.75);margin-top:2px}
+.banner .barrow{font-size:18px;color:rgba(255,255,255,.8);margin-left:auto}
+.qgrid{display:grid;grid-template-columns:repeat(4,1fr);background:#fff}
+.qitem{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 4px;cursor:pointer}
+.qitem:active{opacity:.7}
+.qicon{width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.qlabel{font-size:11px;color:#555;font-weight:500}
+.hscroll{display:flex;gap:12px;padding:4px 16px 12px;overflow-x:auto}
+.hscroll::-webkit-scrollbar{display:none}
+.hcard{width:155px;background:#fff;border-radius:14px;overflow:hidden;flex-shrink:0;box-shadow:0 2px 10px rgba(0,0,0,.06);cursor:pointer}
+.hcard:active{opacity:.9}
+.hthumb{height:88px;display:flex;align-items:center;justify-content:center;font-size:36px}
+.hbody{padding:10px}
+.htitle{font-size:13px;font-weight:600;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hpct{font-size:11px;color:#3B7EF8;margin:5px 0 3px}
+.reccard{background:#fff;border-radius:16px;margin:0 16px 12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05);cursor:pointer}
+.reccard:active{opacity:.9}
+.recthumb{height:110px;display:flex;align-items:center;justify-content:center;font-size:48px}
+.recbody{padding:12px 14px 14px}
+.rectitle{font-size:15px;font-weight:600;color:#111;margin-bottom:6px}
+.recmeta{display:flex;gap:12px;font-size:12px;color:#999;margin-bottom:10px}
+.citem{background:#fff;border-radius:14px;margin:0 16px 10px;padding:14px;display:flex;gap:12px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.citem:active{opacity:.9}
+.cithumb{width:64px;height:64px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0}
+.cicontent{flex:1;min-width:0}
+.cititle{font-size:15px;font-weight:600;color:#111;margin-bottom:4px}
+.cimeta{font-size:12px;color:#999;margin-bottom:8px}
+.cifooter{display:flex;align-items:center;justify-content:space-between}
+.cipct{font-size:12px;color:#3B7EF8;font-weight:500}
+.lhd{background:#fff;padding:16px;margin-bottom:8px}
+.lhdtitle{font-size:18px;font-weight:700;color:#111;margin-bottom:8px}
+.lhdmeta{display:flex;gap:10px;flex-wrap:wrap}
+.chitem{background:#fff;margin:0 16px 10px;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.chhd{display:flex;align-items:center;padding:14px 16px;cursor:pointer}
+.chhd:active{background:#f9f9f9}
+.chicon{width:36px;height:36px;border-radius:10px;background:#e8f0fe;display:flex;align-items:center;justify-content:center;font-size:18px;margin-right:10px}
+.chtitle{flex:1;font-size:15px;font-weight:600;color:#111}
+.charrow{font-size:12px;color:#ccc}
+.litem{display:flex;align-items:center;padding:12px 16px 12px 62px;border-top:1px solid #f5f5f5;cursor:pointer}
+.litem:active{background:#f9f9f9}
+.ldot{width:8px;height:8px;border-radius:50%;background:#3B7EF8;margin-right:10px;flex-shrink:0}
+.ldot.done{background:#22c55e}
+.ldot.lock{background:#ddd}
+.ltitle{flex:1;font-size:14px;color:#333}
+.lstatus{font-size:12px;color:#999}
+.stepbar{display:flex;padding:12px 16px;background:#fff;margin-bottom:8px;border-bottom:1px solid #f0f0f0;flex-shrink:0}
+.stepbtn{flex:1;text-align:center;padding:8px 4px;font-size:12px;color:#999;cursor:pointer;position:relative;border:none;background:transparent}
+.stepbtn.active{color:#3B7EF8;font-weight:600}
+.stepbtn.active::after{content:'';position:absolute;bottom:0;left:20%;width:60%;height:2px;background:#3B7EF8;border-radius:1px}
+.stepbtn.done{color:#22c55e}
+.svideo{height:160px;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+.splaybtn{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:24px}
+.svt{color:rgba(255,255,255,.9);font-size:13px}
+.kcard{background:#fff;border-radius:16px;margin:0 16px 12px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.kctitle{font-size:15px;font-weight:700;color:#111;margin-bottom:10px}
+.kcstep{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.kcnum{width:24px;height:24px;border-radius:50%;background:#3B7EF8;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.kctext{font-size:14px;color:#444;line-height:1.6;flex:1}
+.optitem{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:12px;border:1.5px solid #f0f0f0;margin-bottom:10px;cursor:pointer;transition:all .2s}
+.optitem.sel{border-color:#3B7EF8;background:#f0f4ff}
+.optitem.ok{border-color:#22c55e;background:#e6f9f0}
+.optitem.err{border-color:#ef4444;background:#fff0f0}
+.optletter{width:28px;height:28px;border-radius:50%;background:#f5f6fa;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#666;flex-shrink:0}
+.optitem.sel .optletter{background:#3B7EF8;color:#fff}
+.optitem.ok .optletter{background:#22c55e;color:#fff}
+.optitem.err .optletter{background:#ef4444;color:#fff}
+.opttext{font-size:14px;color:#333;line-height:1.5;padding-top:4px}
+.fbbox{border-radius:12px;padding:14px;margin-bottom:12px}
+.fbok{background:#e6f9f0;border:1px solid #22c55e}
+.fberr{background:#fff0f0;border:1px solid #ef4444}
+.fbtitle{font-size:14px;font-weight:600;margin-bottom:6px}
+.fbtext{font-size:13px;color:#555;line-height:1.6}
+.qhd{background:#fff;padding:12px 16px;margin-bottom:8px;flex-shrink:0}
+.qptext{display:flex;justify-content:space-between;font-size:13px;color:#666;margin-bottom:8px}
+.qcard{background:#fff;border-radius:16px;padding:20px;margin:0 16px 12px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.qnum{font-size:12px;color:#999;margin-bottom:8px}
+.qtype{display:inline-block;padding:2px 8px;border-radius:8px;background:#e8f0fe;color:#3B7EF8;font-size:11px;font-weight:500;margin-bottom:10px}
+.qtext{font-size:16px;font-weight:500;color:#111;line-height:1.6;margin-bottom:16px}
+.qcatgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 16px 12px}
+.qcgitem{background:#fff;border-radius:14px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.qcgitem:active{opacity:.85}
+.qcgicon{font-size:32px}
+.qcgtitle{font-size:14px;font-weight:600;color:#111}
+.qcgcount{font-size:12px;color:#999}
+.sitem{display:flex;align-items:center;margin-bottom:10px}
+.silabel{font-size:13px;color:#666;width:80px;flex-shrink:0}
+.sibar{flex:1;height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;margin:0 10px}
+.sifill{height:100%;border-radius:3px}
+.sinum{font-size:13px;font-weight:600;width:32px;text-align:right}
+.qainput{background:#fff;padding:12px 16px;margin-bottom:8px;flex-shrink:0}
+.qabox{display:flex;align-items:center;gap:10px;background:#f5f6fa;border-radius:24px;padding:10px 16px}
+.qabox input{flex:1;border:none;background:transparent;font-size:14px;color:#333;outline:none}
+.qabox input::placeholder{color:#bbb}
+.qasend{width:32px;height:32px;border-radius:50%;background:#3B7EF8;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:#fff;flex-shrink:0}
+.hqitem{display:flex;align-items:center;padding:13px 16px;background:#fff;border-bottom:1px solid #f5f5f5;cursor:pointer;gap:10px}
+.hqitem:active{background:#f9f9f9}
+.hqrank{width:20px;height:20px;border-radius:50%;background:#3B7EF8;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hqrank.r2{background:#5B5EF8}.hqrank.r3{background:#8B8EF8}.hqrank.rn{background:#ddd;color:#999}
+.hqtext{flex:1;font-size:14px;color:#333}
+.hqarrow{font-size:12px;color:#ccc}
+.cbubble{display:flex;gap:10px;margin-bottom:16px}
+.cbubble.user{flex-direction:row-reverse}
+.cbav{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:#f0f4ff}
+.cbav.uav{background:linear-gradient(135deg,#3B7EF8,#5B5EF8)}
+.cbcontent{max-width:75%}
+.cbname{font-size:11px;color:#999;margin-bottom:4px}
+.cbtext{padding:12px 14px;border-radius:16px;font-size:14px;line-height:1.6;color:#111}
+.cbubble:not(.user) .cbtext{background:#fff;border-radius:4px 16px 16px 16px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.cbubble.user .cbtext{background:linear-gradient(135deg,#3B7EF8,#5B5EF8);color:#fff;border-radius:16px 4px 16px 16px}
+.cbubble.user .cbname{text-align:right}
+.mentortabs{display:flex;gap:8px;padding:12px 16px;background:#fff;border-bottom:1px solid #f0f0f0;flex-shrink:0}
+.mtab{flex:1;height:36px;border-radius:18px;border:1.5px solid #e0e0e0;background:#fff;font-size:12px;font-weight:500;color:#666;cursor:pointer;transition:all .2s}
+.mtab.active{border-color:#3B7EF8;background:#3B7EF8;color:#fff}
+.mcard{background:#fff;border-radius:16px;margin:12px 16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.mchd{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.mcav{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.mcname{font-size:15px;font-weight:600;color:#111}
+.mcrole{font-size:12px;color:#999;margin-top:2px}
+.mctext{font-size:14px;color:#444;line-height:1.7}
+.mclinks{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px}
+.mclink{padding:5px 12px;background:#f0f4ff;border-radius:12px;font-size:12px;color:#3B7EF8;cursor:pointer}
+.rgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 16px 12px}
+.rcard{background:#fff;border-radius:16px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.rcard:active{opacity:.85}
+.ricon{font-size:36px}
+.rname{font-size:14px;font-weight:600;color:#111}
+.rdesc{font-size:11px;color:#999;text-align:center}
+.sliitem{background:#fff;border-radius:14px;margin:0 16px 10px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.sliitem:active{opacity:.9}
+.sliicon{font-size:32px;flex-shrink:0}
+.slicontent{flex:1}
+.slititle{font-size:15px;font-weight:600;color:#111;margin-bottom:4px}
+.slimeta{font-size:12px;color:#999;display:flex;gap:10px}
+.sliarrow{font-size:16px;color:#ccc}
+.trainscene{background:linear-gradient(135deg,#3B7EF8,#5B5EF8);padding:12px 16px;flex-shrink:0}
+.tstitle{font-size:14px;font-weight:600;color:#fff}
+.tssub{font-size:12px;color:rgba(255,255,255,.75);margin-top:2px}
+.chatscroll{flex:1;overflow-y:auto;padding:16px}
+.chatscroll::-webkit-scrollbar{display:none}
+.traininput{background:#fff;padding:12px 16px;border-top:1px solid #f0f0f0;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.tiinput{flex:1;height:40px;background:#f5f6fa;border-radius:20px;border:none;padding:0 16px;font-size:14px;color:#333;outline:none}
+.micbtn{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#3B7EF8,#5B5EF8);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;box-shadow:0 4px 12px rgba(59,126,248,.35);flex-shrink:0}
+.micbtn.rec{background:linear-gradient(135deg,#ef4444,#f97316);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.reshd{background:linear-gradient(135deg,#22c55e,#16a34a);padding:24px 20px;text-align:center;flex-shrink:0}
+.reshdscore{font-size:56px;font-weight:800;color:#fff;line-height:1}
+.reshdlbl{font-size:14px;color:rgba(255,255,255,.85);margin-top:6px}
+.reshdbadge{display:inline-block;margin-top:10px;padding:4px 14px;background:rgba(255,255,255,.25);border-radius:20px;font-size:13px;color:#fff}
+.profhd{background:linear-gradient(135deg,#3B7EF8,#5B5EF8);padding:24px 20px 28px;flex-shrink:0}
+.phrow{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.phav{width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:32px;border:3px solid rgba(255,255,255,.5)}
+.phname{font-size:20px;font-weight:700;color:#fff}
+.phschool{font-size:13px;color:rgba(255,255,255,.8);margin-top:3px}
+.phstats{display:flex;background:rgba(255,255,255,.15);border-radius:14px;overflow:hidden}
+.phsi{flex:1;text-align:center;padding:12px 8px}
+.phsi:not(:last-child){border-right:1px solid rgba(255,255,255,.2)}
+.phsinum{font-size:20px;font-weight:700;color:#fff}
+.phsilabel{font-size:10px;color:rgba(255,255,255,.75);margin-top:2px}
+.menuitem{display:flex;align-items:center;padding:15px 16px;background:#fff;border-bottom:1px solid #f5f5f5;cursor:pointer}
+.menuitem:active{background:#f9f9f9}
+.miicon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-right:12px;flex-shrink:0}
+.micontent{flex:1}
+.mititle{font-size:15px;color:#111}
+.misub{font-size:12px;color:#999;margin-top:2px}
+.miarrow{font-size:14px;color:#ccc}
+.jobcard{background:#fff;border-radius:16px;padding:16px;margin:0 16px 12px;box-shadow:0 2px 12px rgba(0,0,0,.05);cursor:pointer}
+.jobcard:active{opacity:.9}
+.jobhd{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.joblogo{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.jobinfo{flex:1}
+.jobname{font-size:15px;font-weight:600;color:#111}
+.jobco{font-size:12px;color:#999;margin-top:2px}
+.jobsalary{font-size:15px;font-weight:700;color:#f97316}
+.jobtags{display:flex;gap:6px;flex-wrap:wrap}
+.weakitem{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid #f5f5f5}
+.weakitem:last-child{border-bottom:none}
+.winame{flex:1;font-size:14px;color:#333}
+.wipct{font-size:13px;font-weight:600;margin-left:8px}
+.wibar{width:80px;height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;margin-left:10px}
+.wifill{height:100%;border-radius:3px}
+.achieveitem{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f5f5f5}
+.achieveitem:last-child{border-bottom:none}
+.aicon{font-size:28px}
+.aname{font-size:14px;font-weight:600;color:#111}
+.adesc{font-size:12px;color:#999;margin-top:2px}
+</style>
 </head>
-<body class="bg-gray-200">
-<div id="root"></div>
-<script type="text/babel">
-const { useState, useRef, useEffect } = React;
+<body>
+<div class="phone">
+  <div class="statusbar">
+    <span class="time">9:41</span>
+    <span class="icons">📶 WiFi 🔋</span>
+  </div>
+  <div class="app">
+    <div class="toast" id="toast"></div>
 
-/* ==================== SVG Icons ==================== */
-const Icon = ({ d, size = 24, className = '', fill = 'none', stroke = 'currentColor', strokeWidth = 2, viewBox = '0 0 24 24' }) => (
-  <svg width={size} height={size} viewBox={viewBox} fill={fill} stroke={stroke} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>{Array.isArray(d) ? d.map((p,i) => <path key={i} d={p}/>) : <path d={d}/>}</svg>
-);
+    <!-- ===== 首页 ===== -->
+    <div class="screen" id="s-home">
+      <div class="scroll">
+        <div class="homehd">
+          <div class="greet">早上好 👋</div>
+          <div class="uname">张同学</div>
+          <div class="usub">酒店管理专业 · 大二 · 2024001234</div>
+          <div class="banner" onclick="go('s-role-train')">
+            <div class="bicon">🎭</div>
+            <div><div class="btitle">今日推荐：AI角色训练</div><div class="bsub">前台接待高峰期场景 · 预计8分钟</div></div>
+            <div class="barrow">›</div>
+          </div>
+        </div>
+        <div class="qgrid">
+          <div class="qitem" onclick="go('s-courses')"><div class="qicon" style="background:#e8f0fe">📚</div><div class="qlabel">我的课程</div></div>
+          <div class="qitem"
+          onclick="go('s-quiz')"><div class="qicon" style="background:#e6f9f0">✏️</div><div class="qlabel">答题练习</div></div>
+          <div class="qitem" onclick="go('s-qa')"><div class="qicon" style="background:#fff4e6">🤖</div><div class="qlabel">智能问答</div></div>
+          <div class="qitem" onclick="go('s-role-train')"><div class="qicon" style="background:#fff0f0">🎭</div><div class="qlabel">角色训练</div></div>
+        </div>
+        <div class="divider"></div>
+        <div class="stitle">继续学习</div>
+        <div class="hscroll">
+          <div class="hcard" onclick="go('s-lesson')">
+            <div class="hthumb" style="background:linear-gradient(135deg,#667eea,#764ba2)">🏨</div>
+            <div class="hbody"><div class="htitle">前台接待标准流程</div><div class="hpct">75%</div><div class="pw"><div class="pb" style="width:75%"></div></div></div>
+          </div>
+          <div class="hcard" onclick="go('s-lesson')">
+            <div class="hthumb" style="background:linear-gradient(135deg,#f093fb,#f5576c)">🛎️</div>
+            <div class="hbody"><div class="htitle">客房服务管理</div><div class="hpct">40%</div><div class="pw"><div class="pb" style="width:40%"></div></div></div>
+          </div>
+          <div class="hcard" onclick="go('s-lesson')">
+            <div class="hthumb" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">🍽️</div>
+            <div class="hbody"><div class="htitle">餐饮运营实务</div><div class="hpct">60%</div><div class="pw"><div class="pb" style="width:60%"></div></div></div>
+          </div>
+          <div class="hcard" onclick="go('s-lesson')">
+            <div class="hthumb" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">📢</div>
+            <div class="hbody"><div class="htitle">酒店营销策略</div><div class="hpct">20%</div><div class="pw"><div class="pb" style="width:20%"></div></div></div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="stitle">推荐课程</div>
+        <div class="reccard" onclick="go('s-course-detail')">
+          <div class="recthumb" style="background:linear-gradient(135deg,#f7971e,#ffd200)">⚠️</div>
+          <div class="recbody">
+            <div class="rectitle">投诉处理技巧与实战</div>
+            <div class="recmeta"><span>🎥 6个视频</span><span>📝 8个案例</span><span>⏱️ 50分钟</span></div>
+            <div style="display:flex;gap:8px"><span class="tag tr">薄弱点</span><span class="tag to">热门</span></div>
+          </div>
+        </div>
+        <div class="reccard" onclick="go('s-course-detail')">
+          <div class="recthumb" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)">🧳</div>
+          <div class="recbody">
+            <div class="rectitle">宴会管理与服务礼仪</div>
+            <div class="recmeta"><span>🎥 4个视频</span><span>📝 5个案例</span><span>⏱️ 35分钟</span></div>
+            <div style="display:flex;gap:8px"><span class="tag tb">新上线</span></div>
+          </div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+      <div class="tabbar">
+        <button class="tabitem active" onclick="switchTab('home')"><div class="ticon">🏠</div><div class="tlabel">首页</div></button>
+        <button class="tabitem" onclick="switchTab('courses')"><div class="ticon">📚</div><div class="tlabel">课程</div></button>
+        <button class="tabitem" onclick="switchTab('qa')"><div class="ticon">🤖</div><div class="tlabel">问答</div></button>
+        <button class="tabitem" onclick="switchTab('role')"><div class="ticon">🎭</div><div class="tlabel">训练</div></button>
+        <button class="tabitem" onclick="switchTab('profile')"><div class="ticon">👤</div><div class="tlabel">我的</div></button>
+      </div>
+    </div>
 
-const HomeIcon = ({size=24,className=''}) => <Icon size={size} className={className} d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10"/>;
-const MessageCircle = ({size=24,className=''}) => <Icon size={size} className={className} d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>;
-const PlaySquare = ({size=24,className=''}) => <Icon size={size} className={className} d={["M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6z","M10 9l5 3-5 3V9z"]}/>;
-const Briefcase = ({size=24,className=''}) => <Icon size={size} className={className} d={["M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z","M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"]}/>;
-const UserIcon = ({size=24,className=''}) => <Icon size={size} className={className} d={["M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2","M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"]}/>;
-const Search = ({size=24,className=''}) => <Icon size={size} className={className} d={["M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z","M21 21l-4.35-4.35"]}/>;
-const ChevronRight = ({size=24,className=''}) => <Icon size={size} className={className} d="M9 18l6-6-6-6"/>;
-const Star = ({size=24,className=''}) => <Icon size={size} className={className} d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>;
-const Send = ({size=24,className=''}) => <Icon size={size} className={className} d={["M22 2L11 13","M22 2l-7 20-4-9-9-4 20-7z"]}/>;
-const BookOpen = ({size=24,className=''}) => <Icon size={size} className={className} d={["M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z","M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"]}/>;
-const Award = ({size=24,className=''}) => <Icon size={size} className={className} d={["M12 15a7 7 0 1 0 0-14 7 7 0 0 0 0 14z","M8.21 13.89L7 23l5-3 5 3-1.21-9.12"]}/>;
-const TrendingUp = ({size=24,className=''}) => <Icon size={size} className={className} d={["M23 6l-9.5 9.5-5-5L1 18","M17 6h6v6"]}/>;
-const CheckCircle = ({size=24,className=''}) => <Icon size={size} className={className} d={["M22 11.08V12a10 10 0 1 1-5.93-9.14","M22 4L12 14.01l-3-3"]}/>;
-const Clock = ({size=24,className=''}) => <Icon size={size} className={className} d={["M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z","M12 6v6l4 2"]}/>;
-const MapPin = ({size=24,className=''}) => <Icon size={size} className={className} d={["M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z","M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"]}/>;
+    <!-- ===== 课程列表 ===== -->
+    <div class="screen hidden" id="s-courses">
+      <div class="topbar"><div class="toptitle">全部课程</div><button class="topright">🔍</button></div>
+      <div class="scroll">
+        <div style="display:flex;gap:8px;padding:12px 16px;overflow-x:auto">
+          <button class="btns">全部</button>
+          <button class="btno">前厅管理</button>
+          <button class="btno">客房管理</button>
+          <button class="btno">餐饮运营</button>
+          <button class="btno">宴会管理</button>
+        </div>
+        <div class="citem" onclick="go('s-course-detail')">
+          <div class="cithumb" style="background:linear-gradient(135deg,#667eea,#764ba2)">🏨</div>
+          <div class="cicontent"><div class="cititle">前台接待标准流程</div><div class="cimeta">12个知识点 · 6个案例 · 100题</div><div class="cifooter"><div class="pw" style="width:70%"><div class="pb" style="width:75%"></div></div><div class="cipct">75%</div></div></div>
+        </div>
+        <div class="citem" onclick="go('s-course-detail')">
+          <div class="cithumb" style="background:linear-gradient(135deg,#f093fb,#f5576c)">🛎️</div>
+          <div class="cicontent"><div class="cititle">客房服务与管理</div><div class="cimeta">10个知识点 · 8个案例 · 100题</div><div class="cifooter"><div class="pw" style="width:70%"><div class="pb" style="width:40%"></div></div><div class="cipct">40%</div></div></div>
+        </div>
+        <div class="citem" onclick="go('s-course-detail')">
+          <div class="cithumb" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">🍽️</div>
+          <div class="cicontent"><div class="cititle">餐饮运营实务</div><div class="cimeta">15个知识点 · 10个案例 · 100题</div><div class="cifooter"><div class="pw" style="width:70%"><div class="pb" style="width:60%"></div></div><div class="cipct">60%</div></div></div>
+        </div>
+        <div class="citem" onclick="go('s-course-detail')">
+          <div class="cithumb" style="background:linear-gradient(135deg,#f7971e,#ffd200)">⚠️</div>
+          <div class="cicontent"><div class="cititle">投诉处理技巧与实战</div><div class="cimeta">8个知识点 · 12个案例 · 100题</div><div class="cifooter"><div class="pw" style="width:70%"><div class="pb" style="width:20%"></div></div><div class="cipct">20%</div></div></div>
+        </div>
+        <div class="citem" onclick="go('s-course-detail')">
+          <div class="cithumb" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">📢</div>
+          <div class="cicontent"><div class="cititle">酒店营销策略</div><div class="cimeta">9个知识点 · 6个案例 · 100题</div><div class="cifooter"><div class="pw" style="width:70%"><div class="pb" style="width:10%"></div></div><div class="cipct">10%</div></div></div>
+        </div>
+        <div class="citem" onclick="go('s-course-detail')">
+          <div class="cithumb" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)">🧳</div>
+          <div class="cicontent"><div class="cititle">宴会管理与服务礼仪</div><div class="cimeta">11个知识点 · 7个案例 · 100题</div><div class="cifooter"><div class="pw" style="width:70%"><div class="pb" style="width:0%"></div></div><div class="cipct">未开始</div></div></div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+      <div class="tabbar">
+        <button class="tabitem" onclick="switchTab('home')"><div class="ticon">🏠</div><div class="tlabel">首页</div></button>
+        <button class="tabitem active" onclick="switchTab('courses')"><div class="ticon">📚</div><div class="tlabel">课程</div></button>
+        <button class="tabitem" onclick="switchTab('qa')"><div class="ticon">🤖</div><div class="tlabel">问答</div></button>
+        <button class="tabitem" onclick="switchTab('role')"><div class="ticon">🎭</div><div class="tlabel">训练</div></button>
+        <button class="tabitem" onclick="switchTab('profile')"><div class="ticon">👤</div><div class="tlabel">我的</div></button>
+      </div>
+    </div>
 
-/* ==================== App ==================== */
-const App = () => {
-  const [activeTab, setActiveTab] = useState('home');
-  return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-200 p-4">
-      <div className="w-[393px] h-[852px] bg-gray-50 rounded-[50px] shadow-2xl overflow-hidden flex flex-col relative border-[8px] border-black ring-1 ring-gray-300">
-        {/* 状态栏 */}
-        <div className="absolute top-0 w-full h-14 flex justify-between items-end px-7 pb-2 text-[14px] font-semibold text-gray-800 z-50 pointer-events-none">
-          <span className="mb-1 text-gray-900 tracking-tight">09:41</span>
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 w-[120px] h-[32px] bg-black rounded-full z-50"></div>
-          <div className="flex space-x-1.5 items-center mb-1">
-            <div className="flex items-end space-x-[2px] h-3">
-              <div className="w-[3px] h-1.5 bg-gray-900 rounded-sm"></div>
-              <div className="w-[3px] h-2 bg-gray-900 rounded-sm"></div>
-              <div className="w-[3px] h-2.5 bg-gray-900 rounded-sm"></div>
-              <div className="w-[3px] h-3 bg-gray-900 rounded-sm"></div>
+    <!-- ===== 课程详情 ===== -->
+    <div class="screen hidden" id="s-course-detail">
+      <div class="topbar">
+        <button class="backbtn" onclick="back()">‹</button>
+        <div class="toptitle">课程详情</div>
+        <button class="topright">⭐</button>
+      </div>
+      <div class="scroll">
+        <div class="lhd">
+          <div class="lhdtitle">前台接待标准流程</div>
+          <div class="lhdmeta"><span class="tag tb">前厅管理</span><span class="tag tg">已学75%</span><span style="font-size:12px;color:#999">12个知识点</span></div>
+          <div style="margin-top:12px"><div style="display:flex;justify-content:space-between;font-size:12px;color:#666;margin-bottom:6px"><span>学习进度</span><span>75%</span></div><div class="pw"><div class="pb" style="width:75%"></div></div></div>
+          <div style="display:flex;gap:10px;margin-top:14px">
+            <button class="btnp" style="flex:1" onclick="go('s-lesson')">继续学习</button>
+            <button class="btno" onclick="go('s-quiz-doing')">去练题</button>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="stitle">课程章节</div>
+        <div class="chitem">
+          <div class="chhd" onclick="go('s-lesson')"><div class="chicon">📋</div><div class="chtitle">第一章 接待基础规范</div><div class="charrow">›</div></div>
+          <div class="litem" onclick="go('s-lesson')"><div class="ldot done"></div><div class="ltitle">1.1 服务理念与职业素养</div><div class="lstatus">✓ 已完成</div></div>
+          <div class="litem" onclick="go('s-lesson')"><div class="ldot done"></div><div class="ltitle">1.2 仪容仪表标准</div><div class="lstatus">✓ 已完成</div></div>
+          <div class="litem" onclick="go('s-lesson')"><div class="ldot"></div><div class="ltitle">1.3 沟通技巧与语言规范</div><div class="lstatus">进行中</div></div>
+        </div>
+        <div class="chitem">
+          <div class="chhd" onclick="go('s-lesson')"><div class="chicon">🚪</div><div class="chtitle">第二章 入住接待流程</div><div class="charrow">›</div></div>
+          <div class="litem" onclick="go('s-lesson')"><div class="ldot done"></div><div class="ltitle">2.1 预订核实与房型匹配</div><div class="lstatus">✓ 已完成</div></div>
+          <div class="litem" onclick="go('s-lesson')"><div class="ldot"></div><div class="ltitle">2.2 高峰期接待策略</div><div class="lstatus">进行中</div></div>
+          <div class="litem" onclick="go('s-lesson')"><div class="ldot lock"></div><div class="ltitle">2.3 特殊需求处理</div><div class="lstatus">🔒 未解锁</div></div>
+        </div>
+        <div class="chitem">
+          <div class="chhd"><div class="chicon">🔑</div><div class="chtitle">第三章 退房与结账流程</div><div class="charrow">›</div></div>
+          <div class="litem"><div class="ldot lock"></div><div class="ltitle">3.1 退房标准流程</div><div class="lstatus">🔒 未解锁</div></div>
+          <div class="litem"><div class="ldot lock"></div><div class="ltitle">3.2 账单核对与结算</div><div class="lstatus">🔒 未解锁</div></div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+    </div>
+
+    <!-- ===== 知识单元学习 ===== -->
+    <div class="screen hidden" id="s-lesson">
+      <div class="topbar">
+        <button class="backbtn" onclick="back()">‹</button>
+        <div class="toptitle">知识学习</div>
+        <button class="topright">📌</button>
+      </div>
+      <div class="stepbar">
+        <button class="stepbtn done" onclick="showStep(0)">① 情景导入</button>
+        <button class="stepbtn active" onclick="showStep(1)">② 知识讲解</button>
+        <button class="stepbtn" onclick="showStep(2)">③ 互动练习</button>
+        <button class="stepbtn" onclick="showStep(3)">④ 总结反馈</button>
+      </div>
+      <div class="scroll" id="lesson-scroll">
+        <div id="step-0" style="display:none">
+          <div class="card" style="margin-top:12px">
+            <div style="font-size:13px;color:#3B7EF8;font-weight:600;margin-bottom:8px">📍 情景导入</div>
+            <div class="svideo" style="border-radius:12px;overflow:hidden;margin-bottom:12px" onclick="showToast('视频播放中...')"><div class="splaybtn">▶️</div><div class="svt">点击播放情景视频（2:35）</div></div>
+            <div style="font-size:14px;color:#444;line-height:1.7">某五星级酒店前台，周五下午5点，正值入住高峰。一位穿着考究的商务客人李先生走向前台，他在网上预订了一间行政套房，但希望能换到高楼层且远离电梯的安静房间。此时前台系统显示符合条件的房间只剩最后一间，而且还有另一位VIP客户也刚刚抵达……</div>
+          </div>
+          <div class="card"><div style="font-size:13px;color:#666;margin-bottom:8px">💭 思考问题</div><div style="font-size:14px;color:#333;line-height:1.7">如果你是前台服务员，面对这种情况你会如何处理？</div></div>
+          <div style="padding:0 16px 16px"><button class="btnp" onclick="showStep(1)">进入知识讲解 →</button></div>
+        </div>
+        <div id="step-1">
+          <div class="kcard" style="margin-top:12px">
+            <div class="kctitle">📖 前台接待五步工作法</div>
+            <div class="kcstep"><div class="kcnum">1</div><div class="kctext"><strong>迎接问候：</strong>主动迎接，保持微笑，使用标准问候语"您好，欢迎光临！"，目光接触，展现专业形象。</div></div>
+            <div class="kcstep"><div class="kcnum">2</div><div class="kctext"><strong>核实信息：</strong>礼貌询问预订信息，快速核对系统数据，确认客人身份与预订内容，避免让客人久等。</div></div>
+            <div class="kcstep"><div class="kcnum">3</div><div class="kctext"><strong>处理需求：</strong>耐心倾听客人特殊要求，在系统内查询可用资源，提供2~3个备选方案供客人选择。</div></div>
+            <div class="kcstep"><div class="kcnum">4</div><div class="kctext"><strong>确认办理：</strong>与客人确认最终方案，完成入住登记，介绍酒店设施与服务，递交房卡时双手奉上。</div></div>
+            <div class="kcstep"><div class="kcnum">5</div><div class="kctext"><strong>送别引导：</strong>告知房间位置与电梯方向，祝客人入住愉快，目送客人离开前台。</div></div>
+          </div>
+          <div class="kcard">
+            <div class="kctitle">💡 处理特殊需求的关键原则</div>
+            <div style="font-size:14px;color:#444;line-height:1.7">当客人提出特殊需求时，遵循<strong>「先倾听，后解决」</strong>原则：<br><br>• 不要急于说"不行"或"没有"<br>• 先表示理解："我完全理解您的需求"<br>• 查询系统后提供可行方案<br>• 若无法满足，诚恳说明原因并提供补偿方案</div>
+          </div>
+          <div style="padding:0 16px 16px"><button class="btnp" onclick="showStep(2)">开始互动练习 →</button></div>
+        </div>
+        <div id="step-2" style="display:none">
+          <div class="qcard" style="margin-top:12px">
+            <div class="qnum">练习题 · 第1题 / 共3题</div>
+            <div class="qtype">单选题</div>
+            <div class="qtext">客人要求换到高楼层安静房间，但系统只剩一间符合条件的房间，另一位VIP也刚到。前台服务员首先应该？</div>
+            <div class="optitem" onclick="selectOpt(this,'A')"><div class="optletter">A</div><div class="opttext">立即告知客人没有合适的房间，请他接受现有安排</div></div>
+            <div class="optitem" onclick="selectOpt(this,'B')"><div class="optletter">B</div><div class="opttext">先安抚客人稍等，同时联系主管协调两位客人的需求</div></div>
+            <div class="optitem" onclick="selectOpt(this,'C')"><div class="optletter">C</div><div class="opttext">直接将房间分配给先到的客人，不做任何解释</div></div>
+            <div class="optitem" onclick="selectOpt(this,'D')"><div class="optletter">D</div><div class="opttext">让客人等待，优先处理VIP客户</div></div>
+            <div id="fb-1" style="display:none" class="fbbox fbok"><div class="fbtitle">✅ 回答正确！</div><div class="fbtext">联系主管协调是最专业的处理方式。及时上报并寻求支持，同时安抚客人情绪，才能最大程度维护客户满意度。</div></div>
+            <div id="fb-1-wrong" style="display:none" class="fbbox fberr"><div class="fbtitle">❌ 答案有误</div><div class="fbtext">正确答案是B。遇到资源冲突时，应先安抚客人，再联系主管协调，不能单方面做决定。</div></div>
+          </div>
+          <div style="padding:0 16px 16px;display:flex;gap:10px">
+            <button class="btno" onclick="showStep(1)">← 返回讲解</button>
+            <button class="btnp" style="flex:1" id="lesson-submit-btn" onclick="submitOpt()">提交答案</button>
+          </div>
+        </div>
+        <div id="step-3" style="display:none">
+          <div class="card" style="margin-top:12px;text-align:center">
+            <div style="font-size:48px;margin-bottom:8px">🎉</div>
+            <div style="font-size:20px;font-weight:700;color:#111;margin-bottom:4px">本节学习完成！</div>
+            <div style="font-size:13px;color:#999">你已掌握前台接待五步工作法的核心要点</div>
+            <div style="display:flex;justify-content:center;gap:24px;margin:16px 0;padding:16px;background:#f5f6fa;border-radius:12px">
+              <div><div style="font-size:22px;font-weight:700;color:#3B7EF8">85</div><div style="font-size:11px;color:#999">练习得分</div></div>
+              <div><div style="font-size:22px;font-weight:700;color:#22c55e">3/3</div><div style="font-size:11px;color:#999">题目完成</div></div>
+              <div><div style="font-size:22px;font-weight:700;color:#f97316">8min</div><div style="font-size:11px;color:#999">学习时长</div></div>
             </div>
-            <svg className="w-[15px] h-[15px] text-gray-900 mb-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21L15.6 16.2C14.6 15.45 13.35 15 12 15C10.65 15 9.4 15.45 8.4 16.2L12 21ZM12 3C7.95 3 4.21 4.34 1.2 6.6L3 9C5.5 7.12 8.62 6 12 6C15.38 6 18.5 7.12 21 9L22.8 6.6C19.79 4.34 16.05 3 12 3ZM12 9C9.3 9 6.81 9.89 4.8 11.4L6.6 13.8C8.1 12.67 9.97 12 12 12C14.03 12 15.9 12.67 17.4 13.8L19.2 11.4C17.19 9.89 14.7 9 12 9Z"/></svg>
-            <div className="w-6 h-3 border border-gray-900 rounded-[3px] p-[1px] relative flex items-center">
-              <div className="bg-gray-900 h-full w-[85%] rounded-[1px]"></div>
-              <div className="absolute -right-1 top-1 w-[2px] h-1 bg-gray-900 rounded-r-sm"></div>
-            </div>
           </div>
-        </div>
-
-        {/* 内容区 */}
-        <div className="flex-1 overflow-y-auto pb-[90px] bg-gray-50 no-scrollbar">
-          {activeTab === 'home' && <HomeView setActiveTab={setActiveTab} />}
-          {activeTab === 'tutor' && <TutorView />}
-          {activeTab === 'roleplay' && <RoleplayView />}
-          {activeTab === 'jobs' && <JobsView />}
-          {activeTab === 'profile' && <ProfileView />}
-        </div>
-
-        {/* 底部导航 */}
-        <div className="absolute bottom-0 w-full h-[84px] bg-white border-t border-gray-100 flex justify-around items-start pt-2 px-2 pb-6 z-40">
-          <NavItem icon={<HomeIcon size={24}/>} label="首页" active={activeTab==='home'} onClick={()=>setActiveTab('home')}/>
-          <NavItem icon={<MessageCircle size={24}/>} label="AI导师" active={activeTab==='tutor'} onClick={()=>setActiveTab('tutor')}/>
-          <NavItem icon={<PlaySquare size={24}/>} label="实训" active={activeTab==='roleplay'} onClick={()=>setActiveTab('roleplay')}/>
-          <NavItem icon={<Briefcase size={24}/>} label="就业" active={activeTab==='jobs'} onClick={()=>setActiveTab('jobs')}/>
-          <NavItem icon={<UserIcon size={24}/>} label="我的" active={activeTab==='profile'} onClick={()=>setActiveTab('profile')}/>
-        </div>
-
-        {/* Home bar */}
-        <div className="absolute bottom-2 w-full flex justify-center z-50 pointer-events-none">
-          <div className="w-[134px] h-[5px] bg-black rounded-full"></div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/* ==================== HomeView ==================== */
-const HomeView = ({ setActiveTab }) => (
-  <div className="animate-fade-in flex flex-col h-full">
-    <div className="bg-blue-600 rounded-b-3xl pt-14 px-6 pb-10 text-white">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-xl font-bold">早安，李同学</h1>
-          <p className="text-sm text-blue-200 mt-1">2023级 酒店管理专业</p>
-        </div>
-        <div className="w-12 h-12 bg-white rounded-full border-2 border-blue-300 flex items-center justify-center text-blue-600 font-bold text-lg">李</div>
-      </div>
-      <div className="bg-white/20 rounded-full px-4 py-2 flex items-center mb-4 backdrop-blur-sm">
-        <Search size={18} className="text-white/80 mr-2"/>
-        <input type="text" placeholder="搜索知识点、案例或提问..." className="bg-transparent text-white placeholder-white/70 text-sm focus:outline-none w-full"/>
-      </div>
-    </div>
-
-    <div className="px-4 -mt-6">
-      <div className="bg-white rounded-2xl shadow-sm p-4 grid grid-cols-4 gap-4 mb-6">
-        <ActionBtn icon={<BookOpen size={22} className="text-blue-500"/>} label="专业课程"/>
-        <ActionBtn icon={<MessageCircle size={22} className="text-purple-500"/>} label="AI答疑" onClick={()=>setActiveTab('tutor')}/>
-        <ActionBtn icon={<PlaySquare size={22} className="text-orange-500"/>} label="角色实训" onClick={()=>setActiveTab('roleplay')}/>
-        <ActionBtn icon={<Award size={22} className="text-green-500"/>} label="在线测验"/>
-      </div>
-
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="text-lg font-bold text-gray-800">继续学习</h2>
-          <span className="text-xs text-gray-500 flex items-center">全部课程<ChevronRight size={14}/></span>
-        </div>
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center">
-          <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
-            <BookOpen size={28} className="text-blue-600"/>
+          <div class="kcard">
+            <div class="kctitle">📌 本节核心要点</div>
+            <div style="font-size:14px;color:#444;line-height:1.8">✅ 前台接待五步法：迎接→核实→处理→确认→送别<br>✅ 特殊需求：先倾听，后解决，提供备选方案<br>✅ 资源冲突：及时上报主管，不单独决策</div>
           </div>
-          <div className="flex-1">
-            <h3 className="font-bold text-gray-800">酒店前厅运营与管理</h3>
-            <p className="text-xs text-gray-500 mt-1">第三章：客诉处理标准化流程</p>
-            <div className="mt-3 bg-gray-100 h-1.5 rounded-full overflow-hidden">
-              <div className="bg-blue-600 h-full w-2/3 rounded-full"></div>
-            </div>
-            <p className="text-[10px] text-gray-400 mt-1 text-right">已学 65%</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="text-lg font-bold text-gray-800">猜你适合</h2>
-          <span className="text-xs text-gray-500 flex items-center cursor-pointer" onClick={()=>setActiveTab('jobs')}>更多推荐<ChevronRight size={14}/></span>
-        </div>
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-4 border border-blue-100">
-          <div className="flex justify-between items-start">
-            <div>
-              <span className="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded uppercase font-bold tracking-wider mb-2 inline-block">匹配度 98%</span>
-              <h3 className="font-bold text-gray-800">万豪酒店 - 前台管家 (实习)</h3>
-              <p className="text-xs text-gray-600 mt-1 flex items-center"><MapPin size={12} className="mr-1"/>深圳 · 南山区</p>
-            </div>
-            <div className="text-blue-600 font-bold text-sm">3K-4K/月</div>
+          <div style="padding:0 16px 16px;display:flex;gap:10px">
+            <button class="btno" onclick="go('s-role-train')">去角色训练</button>
+            <button class="btnp" style="flex:1" onclick="back()">下一节 →</button>
           </div>
         </div>
       </div>
     </div>
-  </div>
-);
 
-/* ==================== TutorView ==================== */
-const TutorView = () => {
-  const [messages, setMessages] = useState([{
-    role:'assistant', type:'welcome',
-    content:'你好，我是你的AI专业导师。无论是在课堂学习中遇到理论难点，还是在实训中遇到棘手的行业案例，都可以随时问我。'
-  }]);
-  const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef(null);
-  useEffect(() => { messagesEndRef.current?.scrollIntoView({behavior:'smooth'}); }, [messages]);
-
-  const handleSend = () => {
-    if (!input.trim()) return;
-    setMessages(prev=>[...prev,{role:'user',content:input}]);
-    setInput(''); setIsTyping(true);
-    setTimeout(()=>{
-      setIsTyping(false);
-      setMessages(prev=>[...prev,{
-        role:'assistant', type:'3d-answer',
-        academic:'根据《酒店服务管理学》，客诉处理需遵循LEARN模型：Listen(倾听)、Empathize(共情)、Apologize(道歉)、React(响应)、Notify(跟进)。核心原则是先处理情绪，再处理问题。',
-        industry:'在真实的五星级酒店运营中，面对情绪激动的客人，一线员工的权限往往有限。行业通用做法是：第一时间隔离视线（请客人到VIP室或安静区域），奉上热茶安抚，并立刻呼叫大堂经理（MOD）介入，避免在公共区域造成不良影响。',
-        career:'优秀的客诉处理能力是晋升前厅经理或宾客关系经理（GRO）的核心考核指标。建议你在日常实训中，多记录极端案例的处理话术，这将成为你面试顶级酒店时的极大加分项。'
-      }]);
-    },1500);
-  };
-
-  return (
-    <div className="flex flex-col h-full bg-gray-50">
-      <div className="bg-white pt-14 pb-3 px-4 shadow-sm z-10 text-center sticky top-0">
-        <h2 className="text-lg font-bold text-gray-800">全能AI导师</h2>
-        <p className="text-xs text-gray-500">学术 · 产业 · 规划 三维解析</p>
-      </div>
-      <div className="flex-1 p-4 overflow-y-auto no-scrollbar">
-        {messages.map((msg,idx)=>(
-          <div key={idx} className={`mb-6 flex ${msg.role==='user'?'justify-end':'justify-start'}`}>
-            {msg.role==='assistant' && (
-              <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white mr-2 flex-shrink-0">
-                <MessageCircle size={16}/>
-              </div>
-            )}
-            <div className={`max-w-[85%] ${msg.role==='user'?'bg-blue-600 text-white rounded-2xl rounded-tr-sm p-3':''}`}>
-              {msg.type==='welcome' && (
-                <div className="bg-white border border-gray-100 rounded-2xl rounded-tl-sm p-4 shadow-sm text-sm text-gray-700">
-                  {msg.content}
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded-full text-xs cursor-pointer" onClick={()=>setInput('客人坚持要求晚上6点退房怎么办？')}>"客人坚持要求晚上6点退房？"</span>
-                    <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded-full text-xs cursor-pointer" onClick={()=>setInput('前台实习生转正考核什么？')}>"前台实习生考核要点？"</span>
-                  </div>
-                </div>
-              )}
-              {msg.role==='user' && <div className="text-sm">{msg.content}</div>}
-              {msg.type==='3d-answer' && <ThreeDTutorResponse data={msg}/>}
-            </div>
+    <!-- ===== 答题首页 ===== -->
+    <div class="screen hidden" id="s-quiz">
+      <div class="topbar"><div class="toptitle">答题练习</div><button class="topright">📊</button></div>
+      <div class="scroll">
+        <div class="card" style="margin-top:12px">
+          <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:12px">📊 我的学习数据</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-bottom:12px">
+            <div style="background:#f0f4ff;border-radius:12px;padding:12px 4px"><div style="font-size:20px;font-weight:700;color:#3B7EF8">156</div><div style="font-size:11px;color:#999;margin-top:2px">总答题数</div></div>
+            <div style="background:#e6f9f0;border-radius:12px;padding:12px 4px"><div style="font-size:20px;font-weight:700;color:#22c55e">78%</div><div style="font-size:11px;color:#999;margin-top:2px">正确率</div></div>
+            <div style="background:#fff4e6;border-radius:12px;padding:12px 4px"><div style="font-size:20px;font-weight:700;color:#f97316">7天</div><div style="font-size:11px;color:#999;margin-top:2px">连续学习</div></div>
           </div>
-        ))}
-        {isTyping && (
-          <div className="flex justify-start mb-6">
-            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white mr-2"><MessageCircle size={16}/></div>
-            <div className="bg-white border border-gray-100 rounded-2xl rounded-tl-sm p-4 shadow-sm flex items-center space-x-1">
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay:'0.2s'}}></div>
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay:'0.4s'}}></div>
-            </div>
-          </div>
-        )}
-        <div ref={messagesEndRef}/>
-      </div>
-      <div className="bg-white p-3 border-t border-gray-200 sticky bottom-0">
-        <div className="flex items-center bg-gray-100 rounded-full px-4 py-2">
-          <input type="text" value={input} onChange={e=>setInput(e.target.value)} onKeyPress={e=>e.key==='Enter'&&handleSend()} placeholder="输入您的问题..." className="bg-transparent flex-1 focus:outline-none text-sm text-gray-700"/>
-          <button onClick={handleSend} disabled={!input.trim()} className={`ml-2 p-1.5 rounded-full ${input.trim()?'bg-blue-600 text-white':'bg-gray-300 text-gray-500'}`}><Send size={16}/></button>
+          <div style="background:#fff0f0;border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px"><span style="font-size:20px">⚠️</span><div><div style="font-size:13px;font-weight:600;color:#ef4444">薄弱知识点</div><div style="font-size:12px;color:#999;margin-top:2px">投诉处理(62%) · 应急预案(68%)</div></div></div>
         </div>
-      </div>
-    </div>
-  );
-};
-
-const ThreeDTutorResponse = ({data}) => {
-  const [activeSubTab, setActiveSubTab] = useState('academic');
-  const tabs = [
-    {id:'academic',label:'学术导师',icon:<BookOpen size={14}/>},
-    {id:'industry',label:'产业导师',icon:<Briefcase size={14}/>},
-    {id:'career',label:'职业规划',icon:<TrendingUp size={14}/>},
-  ];
-  return (
-    <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm shadow-sm overflow-hidden w-full text-sm">
-      <div className="flex border-b border-gray-100">
-        {tabs.map(tab=>(
-          <button key={tab.id} onClick={()=>setActiveSubTab(tab.id)}
-            className={`flex-1 flex items-center justify-center py-2.5 text-xs font-medium transition-colors ${activeSubTab===tab.id?'bg-blue-50 text-blue-700 border-b-2 border-blue-600':'text-gray-500 hover:bg-gray-50'}`}>
-            <span className="mr-1">{tab.icon}</span>{tab.label}
-          </button>
-        ))}
-      </div>
-      <div className="p-4 text-gray-700 leading-relaxed min-h-[120px]">
-        {activeSubTab==='academic' && <div className="animate-fade-in"><span className="font-bold text-blue-800 mb-2 block">【理论视角】</span>{data.academic}</div>}
-        {activeSubTab==='industry' && <div className="animate-fade-in"><span className="font-bold text-orange-600 mb-2 block">【实战经验】</span>{data.industry}</div>}
-        {activeSubTab==='career'   && <div className="animate-fade-in"><span className="font-bold text-purple-600 mb-2 block">【发展建议】</span>{data.career}</div>}
-      </div>
-    </div>
-  );
-};
-
-/* ==================== RoleplayView ==================== */
-const RoleplayView = () => {
-  const [viewState, setViewState] = useState('list');
-  if (viewState==='active') return <ActiveRoleplay setViewState={setViewState}/>;
-  if (viewState==='feedback') return <RoleplayFeedback setViewState={setViewState}/>;
-  return (
-    <div className="flex flex-col h-full bg-gray-50">
-      <div className="bg-white pt-14 pb-3 px-4 shadow-sm z-10">
-        <h2 className="text-lg font-bold text-gray-800">情景实训</h2>
-        <p className="text-xs text-gray-500">沉浸式角色扮演 · AI实时评测</p>
-      </div>
-      <div className="p-4">
-        <div className="flex space-x-2 mb-4 overflow-x-auto pb-2 no-scrollbar">
-          <span className="bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm whitespace-nowrap cursor-pointer">前厅部</span>
-          <span className="bg-white text-gray-600 border border-gray-200 px-4 py-1.5 rounded-full text-sm whitespace-nowrap cursor-pointer">客房部</span>
-          <span className="bg-white text-gray-600 border border-gray-200 px-4 py-1.5 rounded-full text-sm whitespace-nowrap cursor-pointer">餐饮部</span>
+        <div class="card" style="background:linear-gradient(135deg,#3B7EF8,#5B5EF8)">
+          <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:6px">🎯 今日推荐练习</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.8);margin-bottom:12px">基于你的薄弱点智能推荐 · 10道题 · 约15分钟</div>
+          <button style="width:100%;height:40px;background:#fff;border:none;border-radius:20px;color:#3B7EF8;font-size:14px;font-weight:600;cursor:pointer" onclick="go('s-quiz-doing')">立即开始练习</button>
         </div>
-        <div className="space-y-4">
-          <ScenarioCard title="接待暴躁的商务客人" desc="模拟场景：客人因航班延误凌晨抵达，发现预订房型被降级，情绪极度激动。" tags={['客诉处理','情绪安抚','高难度']} role="前台接待员" aiRole="王总 (商务精英)" onStart={()=>setViewState('active')}/>
-          <ScenarioCard title="外籍客人入住办理" desc="模拟场景：接待一位只会说英语的首次访华客人，需核对护照并介绍酒店设施。" tags={['跨文化沟通','SOP流程']} role="前台接待员" aiRole="Mr. Smith (游客)"/>
-          <ScenarioCard title="团队入住突发状况" desc="模拟场景：旅游团到达，但导游提供的排房名单与系统不符，大堂拥挤。" tags={['团队接待','应急处理']} role="大堂副理" aiRole="李导 (旅行社)"/>
+        <div class="stitle">按课程选择</div>
+        <div class="qcatgrid">
+          <div class="qcgitem" onclick="go('s-quiz-doing')"><div class="qcgicon">🏨</div><div class="qcgtitle">前台接待</div><div class="qcgcount">100题 · 已练75题</div><div class="pw"><div class="pb" style="width:75%"></div></div></div>
+          <div class="qcgitem" onclick="go('s-quiz-doing')"><div class="qcgicon">🛎️</div><div class="qcgtitle">客房管理</div><div class="qcgcount">100题 · 已练40题</div><div class="pw"><div class="pb" style="width:40%"></div></div></div>
+          <div class="qcgitem" onclick="go('s-quiz-doing')"><div class="qcgicon">🍽️</div><div class="qcgtitle">餐饮运营</div><div class="qcgcount">100题 · 已练60题</div><div class="pw"><div class="pb" style="width:60%"></div></div></div>
+          <div class="qcgitem" onclick="go('s-quiz-doing')"><div class="qcgicon">⚠️</div><div class="qcgtitle">投诉处理</div><div class="qcgcount">100题 · 已练20题</div><div class="pw"><div class="pb" style="width:20%"></div></div></div>
+          <div class="qcgitem" onclick="go('s-quiz-doing')"><div class="qcgicon">📢</div><div class="qcgtitle">酒店营销</div><div class="qcgcount">100题 · 已练10题</div><div class="pw"><div class="pb" style="width:10%"></div></div></div>
+          <div class="qcgitem" onclick="go('s-quiz-doing')"><div class="qcgicon">🧳</div><div class="qcgtitle">宴会管理</div><div class="qcgcount">100题 · 未开始</div><div class="pw"><div class="pb" style="width:0%"></div></div></div>
         </div>
-      </div>
-    </div>
-  );
-};
-
-const ScenarioCard = ({title,desc,tags,role,aiRole,onStart}) => (
-  <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-    <div className="flex justify-between items-start mb-2">
-      <h3 className="font-bold text-gray-800 text-base">{title}</h3>
-      <span className="bg-red-50 text-red-600 text-[10px] px-2 py-0.5 rounded font-bold">必修实训</span>
-    </div>
-    <p className="text-xs text-gray-500 mb-3 leading-relaxed">{desc}</p>
-    <div className="flex space-x-2 mb-4">
-      {tags.map(tag=><span key={tag} className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">{tag}</span>)}
-    </div>
-    <div className="flex justify-between items-center border-t border-gray-50 pt-3">
-      <div className="flex text-xs items-center text-gray-600">
-        <UserIcon size={12} className="mr-1"/>扮演: <span className="font-bold text-blue-600 ml-1">{role}</span>
-      </div>
-      <button onClick={onStart} className="bg-blue-600 text-white text-xs px-4 py-1.5 rounded-full font-medium shadow-md shadow-blue-200 active:scale-95 transition-all">开始演练</button>
-    </div>
-  </div>
-);
-
-const ActiveRoleplay = ({setViewState}) => {
-  const [messages, setMessages] = useState([
-    {role:'system',content:'实训开始！你现在的身份是前台接待员。客人王总（AI扮演）气冲冲地走向前台...'},
-    {role:'ai',content:'你们搞什么鬼？我大半夜的航班晚点已经够烦了，现在告诉我我订的行政套房没了？降级成大床房？把你们经理叫出来！'}
-  ]);
-  const [input,setInput]=useState('');
-  const [turn,setTurn]=useState(1);
-  const handleSend=()=>{
-    if(!input.trim())return;
-    setMessages(prev=>[...prev,{role:'user',content:input}]);
-    setInput('');
-    if(turn>=2){setTimeout(()=>setViewState('feedback'),1500);return;}
-    setTimeout(()=>{
-      setMessages(prev=>[...prev,{role:'ai',content:'我不要听你道歉！我都等了二十分钟了，我就问你现在怎么解决？我明天一早还有个几千万的合同要签，休息不好你们负得起责吗？'}]);
-      setTurn(turn+1);
-    },1000);
-  };
-  return (
-    <div className="flex flex-col h-full bg-gray-900 text-white relative">
-      <div className="pt-14 pb-3 px-4 border-b border-gray-800 bg-gray-900 flex justify-between items-center">
-        <div className="flex items-center">
-          <div className="w-10 h-10 bg-red-900/50 rounded-full border border-red-500/30 flex items-center justify-center mr-3"><UserIcon className="text-red-400" size={20}/></div>
-          <div>
-            <h3 className="font-bold text-sm">王总 (愤怒的客人)</h3>
-            <p className="text-[10px] text-gray-400 flex items-center"><Clock size={10} className="mr-1"/>情绪值: 极差 | 剩余对话轮数: {3-turn}</p>
+        <div class="stitle">我的成绩记录</div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div style="font-size:14px;font-weight:600;color:#111">最近测验</div><button class="btno" onclick="go('s-quiz
+-result')">查看报告</button></div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px;background:#f5f6fa;border-radius:10px"><div><div style="font-size:13px;font-weight:500;color:#111">前台接待强化练习</div><div style="font-size:11px;color:#999;margin-top:2px">2024-04-18 · 10题</div></div><div style="font-size:18px;font-weight:700;color:#22c55e">85分</div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px;background:#f5f6fa;border-radius:10px"><div><div style="font-size:13px;font-weight:500;color:#111">投诉处理专项练习</div><div style="font-size:11px;color:#999;margin-top:2px">2024-04-17 · 10题</div></div><div style="font-size:18px;font-weight:700;color:#f97316">62分</div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px;background:#f5f6fa;border-radius:10px"><div><div style="font-size:13px;font-weight:500;color:#111">客房管理综合测验</div><div style="font-size:11px;color:#999;margin-top:2px">2024-04-16 · 20题</div></div><div style="font-size:18px;font-weight:700;color:#3B7EF8">79分</div></div>
           </div>
         </div>
-        <button onClick={()=>setViewState('list')} className="text-gray-400 text-xs">退出</button>
+        <div style="height:16px"></div>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
-        {messages.map((msg,idx)=>(
-          <div key={idx} className={`flex ${msg.role==='user'?'justify-end':'justify-start'}`}>
-            {msg.role==='system' && <div className="w-full text-center my-2"><span className="bg-gray-800 text-gray-400 text-xs px-3 py-1 rounded-full">{msg.content}</span></div>}
-            {msg.role==='ai' && <div className="bg-gray-800 text-gray-100 rounded-2xl rounded-tl-none p-3 max-w-[80%] text-sm border border-gray-700 shadow-lg">{msg.content}</div>}
-            {msg.role==='user' && <div className="bg-blue-600 text-white rounded-2xl rounded-tr-none p-3 max-w-[80%] text-sm shadow-lg">{msg.content}</div>}
-          </div>
-        ))}
-      </div>
-      <div className="p-4 bg-gray-900 border-t border-gray-800">
-        <div className="text-[10px] text-gray-500 mb-2">实训小提示：先安抚情绪，尝试提出替代补偿方案。</div>
-        <div className="flex items-center bg-gray-800 rounded-xl px-3 py-2 border border-gray-700">
-          <input type="text" value={input} onChange={e=>setInput(e.target.value)} onKeyPress={e=>e.key==='Enter'&&handleSend()} placeholder="作为前台，你要说什么..." className="bg-transparent flex-1 focus:outline-none text-sm text-gray-200"/>
-          <button onClick={handleSend} className={`ml-2 px-3 py-1.5 rounded-lg text-sm font-medium ${input.trim()?'bg-blue-600 text-white':'bg-gray-700 text-gray-500'}`}>发送</button>
-        </div>
+      <div class="tabbar">
+        <button class="tabitem" onclick="switchTab('home')"><div class="ticon">🏠</div><div class="tlabel">首页</div></button>
+        <button class="tabitem active" onclick="switchTab('courses')"><div class="ticon">📚</div><div class="tlabel">课程</div></button>
+        <button class="tabitem" onclick="switchTab('qa')"><div class="ticon">🤖</div><div class="tlabel">问答</div></button>
+        <button class="tabitem" onclick="switchTab('role')"><div class="ticon">🎭</div><div class="tlabel">训练</div></button>
+        <button class="tabitem" onclick="switchTab('profile')"><div class="ticon">👤</div><div class="tlabel">我的</div></button>
       </div>
     </div>
-  );
-};
 
-const RoleplayFeedback = ({setViewState}) => (
-  <div className="flex flex-col h-full bg-blue-50 overflow-y-auto no-scrollbar">
-    <div className="bg-gradient-to-b from-blue-600 to-blue-800 pt-16 pb-6 px-6 text-center text-white rounded-b-[40px] shadow-lg">
-      <h2 className="text-2xl font-bold mb-1">实训报告</h2>
-      <p className="text-blue-200 text-sm mb-6">接待暴躁的商务客人</p>
-      <div className="w-24 h-24 bg-white rounded-full mx-auto flex items-center justify-center border-4 border-blue-400 shadow-xl relative z-10">
-        <span className="text-4xl font-extrabold text-blue-600">82</span>
+    <!-- ===== 答题进行中 ===== -->
+    <div class="screen hidden" id="s-quiz-doing">
+      <div class="topbar">
+        <button class="backbtn" onclick="back()">‹</button>
+        <div class="toptitle">投诉处理强化训练</div>
+        <button class="topright" style="font-size:13px;color:#ef4444">结束</button>
       </div>
-    </div>
-    <div className="px-4 -mt-8 relative z-20 pb-8">
-      <div className="bg-white p-5 rounded-2xl shadow-sm mb-4">
-        <h3 className="font-bold text-gray-800 mb-4 flex items-center"><Award className="text-yellow-500 mr-2" size={18}/>多维度评分</h3>
-        <div className="space-y-3">
-          <ScoreBar label="情绪安抚技巧" score={75} color="bg-orange-500"/>
-          <ScoreBar label="服务SOP遵循" score={90} color="bg-green-500"/>
-          <ScoreBar label="危机处理灵活性" score={80} color="bg-blue-500"/>
-          <ScoreBar label="专业话术规范" score={85} color="bg-purple-500"/>
+      <div class="qhd">
+        <div class="qptext"><span>第 3 题 / 共 10 题</span><span>⏱️ 12:35</span></div>
+        <div class="pw"><div class="pb" style="width:30%"></div></div>
+      </div>
+      <div class="scroll">
+        <div class="qcard" style="margin-top:12px">
+          <div class="qnum">第3题</div>
+          <div class="qtype">单选题</div>
+          <div class="qtext">客人在餐厅用餐时发现菜品温度不够，情绪有些激动，作为服务员应该首先？</div>
+          <div class="optitem" id="qopt-A" onclick="selectQuizOpt('A')"><div class="optletter">A</div><div class="opttext">立即更换菜品，不收取任何费用</div></div>
+          <div class="optitem" id="qopt-B" onclick="selectQuizOpt('B')"><div class="optletter">B</div><div class="opttext">先真诚道歉，了解客人具体情况，再提供解决方案</div></div>
+          <div class="optitem" id="qopt-C" onclick="selectQuizOpt('C')"><div class="optletter">C</div><div class="opttext">建议客人等待，告知厨房需要时间加热</div></div>
+          <div class="optitem" id="qopt-D" onclick="selectQuizOpt('D')"><div class="optletter">D</div><div class="opttext">告诉客人菜品温度属于正常范围</div></div>
         </div>
-      </div>
-      <div className="bg-white p-5 rounded-2xl shadow-sm mb-4">
-        <h3 className="font-bold text-gray-800 mb-3 flex items-center"><MessageCircle className="text-blue-500 mr-2" size={18}/>AI导师深度点评</h3>
-        <div className="text-sm text-gray-600 leading-relaxed space-y-3">
-          <p><span className="font-bold text-green-600">优点：</span>你在对话初期表现得很冷静，没有与客人发生正面冲突，并且准确地提出了赔偿免费早餐的方案，SOP流程执行到位。</p>
-          <p><span className="font-bold text-red-500">不足：</span>当客人情绪二次爆发，提及"千万合同"施压时，你的回答略显慌乱，仍在重复道歉，缺乏"隔离视线"和"请求支援"的意识。</p>
-          <div className="bg-blue-50 p-3 rounded-xl border border-blue-100 mt-2 text-blue-800 text-xs">
-            <span className="font-bold block mb-1">💡 优化话术建议：</span>
-            "王总，我非常理解您的着急，影响您明天的会议我们万分抱歉。这里是大堂人多嘈杂，不如我先带您到VIP休息室用杯热茶，我已经呼叫了值班大堂经理，他马上带着具体解决方案过来亲自向您致歉。您看可以吗？"
+        <div id="quiz-feedback" style="display:none;margin:0 16px 12px">
+          <div class="fbbox fbok">
+            <div class="fbtitle">✅ 回答正确！+10分</div>
+            <div class="fbtext">优秀的服务应遵循"先道歉、后解决"原则。真诚道歉能有效缓解客人情绪，了解具体情况后再提供针对性方案，才能最大化客户满意度。</div>
+          </div>
+          <div style="margin-top:10px;padding:12px;background:#f5f6fa;border-radius:12px">
+            <div style="font-size:13px;font-weight:600;color:#111;margin-bottom:6px">📚 相关知识点</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="mclink">服务标准化流程</span><span class="mclink">客户投诉处理</span></div>
           </div>
         </div>
+        <div style="height:16px"></div>
       </div>
-      <button onClick={()=>setViewState('list')} className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-blue-200">完成并返回列表</button>
+      <div style="padding:12px 16px;background:#fff;border-top:1px solid #f0f0f0;flex-shrink:0">
+        <button class="btnp" id="quiz-submit-btn" onclick="submitQuiz()">提交答案</button>
+      </div>
     </div>
-  </div>
-);
 
-const ScoreBar = ({label,score,color}) => (
-  <div className="flex items-center text-xs">
-    <div className="w-24 text-gray-600">{label}</div>
-    <div className="flex-1 bg-gray-100 h-2 rounded-full overflow-hidden mx-2"><div className={`h-full ${color}`} style={{width:`${score}%`}}></div></div>
-    <div className="w-6 text-right font-bold text-gray-700">{score}</div>
-  </div>
-);
-
-/* ==================== JobsView ==================== */
-const JobsView = () => (
-  <div className="flex flex-col h-full bg-gray-50">
-    <div className="bg-white pt-14 pb-4 px-4 shadow-sm sticky top-0 z-10">
-      <h2 className="text-lg font-bold text-gray-800">智能就业对接</h2>
-      <p className="text-xs text-gray-500 mt-1">基于您的学习画像生成的个性化推荐</p>
-    </div>
-    <div className="p-4">
-      <div className="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-4 text-white shadow-md mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <div className="font-medium text-sm">你的职业技能画像</div>
-          <div className="text-xs bg-white/20 px-2 py-1 rounded border border-white/30">评估库更新于今天</div>
+    <!-- ===== 答题结果 ===== -->
+    <div class="screen hidden" id="s-quiz-result">
+      <div class="topbar">
+        <button class="backbtn" onclick="back()">‹</button>
+        <div class="toptitle">练习结果</div>
+        <button class="topright">分享</button>
+      </div>
+      <div class="scroll">
+        <div style="background:linear-gradient(135deg,#3B7EF8,#5B5EF8);padding:28px 20px;text-align:center">
+          <div style="font-size:13px;color:rgba(255,255,255,.8);margin-bottom:8px">投诉处理强化训练</div>
+          <div style="font-size:56px;font-weight:800;color:#fff;line-height:1">82</div>
+          <div style="font-size:14px;color:rgba(255,255,255,.85);margin-top:6px">良好 · 共10题 · 用时8分23秒</div>
+          <div style="display:inline-block;margin-top:10px;padding:4px 14px;background:rgba(255,255,255,.2);border-radius:20px;font-size:13px;color:#fff">比上次提升了 +20分 🎉</div>
         </div>
-        <div className="flex flex-wrap gap-2 mb-2">
-          <span className="bg-white text-blue-700 px-2 py-1 rounded text-xs font-bold shadow-sm">客诉处理 (优)</span>
-          <span className="bg-white text-blue-700 px-2 py-1 rounded text-xs font-bold shadow-sm">前台SOP执行 (良)</span>
-          <span className="bg-white/20 text-white px-2 py-1 rounded text-xs border border-white/40">宴会策划 (待提升)</span>
+        <div class="card" style="margin-top:12px">
+          <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:14px">📊 各项得分</div>
+          <div class="sitem"><div class="silabel">知识掌握</div><div class="sibar"><div class="sifill" style="width:85%;background:linear-gradient(90deg,#22c55e,#16a34a)"></div></div><div class="sinum" style="color:#22c55e">85</div></div>
+          <div class="sitem"><div class="silabel">应变能力</div><div class="sibar"><div class="sifill" style="width:80%;background:linear-gradient(90deg,#3B7EF8,#5B5EF8)"></div></div><div class="sinum" style="color:#3B7EF8">80</div></div>
+          <div class="sitem"><div class="silabel">服务规范</div><div class="sibar"><div class="sifill" style="width:78%;background:linear-gradient(90deg,#3B7EF8,#5B5EF8)"></div></div><div class="sinum" style="color:#3B7EF8">78</div></div>
+          <div class="sitem"><div class="silabel">沟通技巧</div><div class="sibar"><div class="sifill" style="width:88%;background:linear-gradient(90deg,#22c55e,#16a34a)"></div></div><div class="sinum" style="color:#22c55e">88</div></div>
         </div>
-        <p className="text-[10px] text-indigo-100 mt-3 border-t border-indigo-500/50 pt-2">AI评语：极具服务意识，情绪稳定性高，推荐优先应聘前厅部或宾客关系岗。</p>
-      </div>
-      <h3 className="font-bold text-gray-800 mb-3 ml-1 text-sm">高匹配度岗位推荐</h3>
-      <div className="space-y-4">
-        <JobCard title="前台管家 (储备干部)" company="万豪国际酒店" location="深圳" salary="4K-6K" match={98} tags={['五星级','包食宿','转正机会大']}/>
-        <JobCard title="宾客关系主任 (GRO)" company="洲际酒店集团" location="广州" salary="5K-7K" match={92} tags={['英语环境','高端人脉','年底双薪']}/>
-        <JobCard title="行政酒廊服务专员" company="香格里拉大酒店" location="深圳" salary="4.5K-6K" match={85} tags={['排班规律','系统培训']}/>
-      </div>
-    </div>
-  </div>
-);
-
-const JobCard = ({title,company,location,salary,match,tags}) => (
-  <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 relative overflow-hidden">
-    <div className="absolute top-0 right-0 bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1 rounded-bl-xl">匹配度 {match}%</div>
-    <h3 className="font-bold text-gray-800 text-base mb-1 w-4/5">{title}</h3>
-    <div className="flex justify-between items-center mb-3">
-      <span className="text-sm text-gray-600">{company}</span>
-      <span className="font-bold text-orange-500 text-sm">{salary}</span>
-    </div>
-    <div className="flex space-x-2 mb-4">
-      <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded flex items-center"><MapPin size={10} className="mr-1"/>{location}</span>
-      {tags.map(tag=><span key={tag} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">{tag}</span>)}
-    </div>
-    <div className="flex justify-between items-center pt-3 border-t border-gray-50">
-      <div className="text-[10px] text-gray-400">基于你的【客诉处理】高分推荐</div>
-      <button className="bg-blue-600 text-white text-xs px-5 py-1.5 rounded-full font-medium shadow-sm">一键投递</button>
-    </div>
-  </div>
-);
-
-/* ==================== ProfileView ==================== */
-const ProfileView = () => (
-  <div className="flex flex-col h-full bg-gray-50">
-    <div className="bg-blue-600 pt-16 pb-20 px-6 text-white text-center rounded-b-[40px]">
-      <div className="w-20 h-20 bg-white rounded-full mx-auto flex items-center justify-center text-blue-600 font-bold text-3xl mb-3 border-4 border-blue-400">李</div>
-      <h2 className="text-xl font-bold">李同学</h2>
-      <p className="text-blue-200 text-sm mt-1">计算机与旅游学院 · 酒店管理专业</p>
-    </div>
-    <div className="px-4 -mt-12 space-y-4">
-      <div className="bg-white p-4 rounded-2xl shadow-sm flex justify-around items-center">
-        <div className="text-center"><div className="text-xl font-bold text-gray-800">42<span className="text-xs text-gray-500 font-normal ml-1">小时</span></div><div className="text-xs text-gray-500">学习时长</div></div>
-        <div className="w-px h-8 bg-gray-100"></div>
-        <div className="text-center"><div className="text-xl font-bold text-gray-800">15<span className="text-xs text-gray-500 font-normal ml-1">次</span></div><div className="text-xs text-gray-500">实训通关</div></div>
-        <div className="w-px h-8 bg-gray-100"></div>
-        <div className="text-center"><div className="text-xl font-bold text-gray-800">8<span className="text-xs text-gray-500 font-normal ml-1">门</span></div><div className="text-xs text-gray-500">完成课程</div></div>
-      </div>
-      <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-        <ProfileListItem icon={<BookOpen size={18} className="text-blue-500"/>} title="我的课程"/>
-        <ProfileListItem icon={<Star size={18} className="text-yellow-500"/>} title="错题与收藏"/>
-        <ProfileListItem icon={<CheckCircle size={18} className="text-green-500"/>} title="能力评估报告"/>
-        <ProfileListItem icon={<Briefcase size={18} className="text-orange-500"/>} title="投递记录"/>
+        <div class="card">
+          <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:12px">💡 改进建议</div>
+          <div style="font-size:14px;color:#444;line-height:1.7">你在<strong style="color:#ef4444">应急预案处理</strong>方面还有提升空间，建议重点练习以下知识点：</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+            <span class="mclink" onclick="go('s-qa-detail')">突发事件应对</span>
+            <span class="mclink" onclick="go('s-qa-detail')">客户需求分析</span>
+            <span class="mclink" onclick="go('s-lesson')">投诉处理流程</span>
+          </div>
+        </div>
+        <div style="padding:0 16px 16px;display:flex;gap:10px">
+          <button class="btno" onclick="go('s-quiz-doing')">再练一次</button>
+          <button class="btnp" style="flex:1" onclick="go('s-role-train')">去角色训练巩固</button>
+        </div>
       </div>
     </div>
-  </div>
-);
 
-const ProfileListItem = ({icon,title}) => (
-  <div className="flex items-center justify-between p-4 border-b border-gray-50 last:border-0 hover:bg-gray-50 cursor-pointer">
-    <div className="flex items-center"><div className="w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center mr-3">{icon}</div><span className="text-sm text-gray-800 font-medium">{title}</span></div>
-    <ChevronRight size={16} className="text-gray-400"/>
-  </div>
-);
+    <!-- ===== 智能问答首页 ===== -->
+    <div class="screen hidden" id="s-qa">
+      <div class="topbar"><div class="toptitle">智能问答</div><button class="topright">📋</button></div>
+      <div class="qainput">
+        <div class="qabox">
+          <span style="font-size:18px">🤖</span>
+          <input type="text" placeholder="输入你的专业问题..." id="qa-input" onkeydown="if(event.key==='Enter')goQaDetail()">
+          <button class="qasend" onclick="goQaDetail()">↑</button>
+        </div>
+      </div>
+      <div class="scroll">
+        <div class="stitle">🔥 热门问题</div>
+        <div style="background:#fff;border-radius:16px;margin:0 16px 12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05)">
+          <div class="hqitem" onclick="go('s-qa-detail')"><div class="hqrank">1</div><div class="hqtext">如何处理醉酒客人的突发情况？</div><div class="hqarrow">›</div></div>
+          <div class="hqitem" onclick="go('s-qa-detail')"><div class="hqrank r2">2</div><div class="hqtext">前台接待时遇到无预订客人怎么办？</div><div class="hqarrow">›</div></div>
+          <div class="hqitem" onclick="go('s-qa-detail')"><div class="hqrank r3">3</div><div class="hqtext">客人对账单有异议如何妥善处理？</div><div class="hqarrow">›</div></div>
+          <div class="hqitem" onclick="go('s-qa-detail')"><div class="hqrank rn">4</div><div class="hqtext">如何提升酒店服务质量与客户满意度？</div><div class="hqarrow">›</div></div>
+          <div class="hqitem" onclick="go('s-qa-detail')"><div class="hqrank rn">5</div><div class="hqtext">宴会服务中如何处理突发设备故障？</div><div class="hqarrow">›</div></div>
+        </div>
+        <div class="stitle">📖 最近提问</div>
+        <div style="background:#fff;border-radius:16px;margin:0 16px 12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05)">
+          <div class="hqitem" onclick="go('s-qa-detail')"><div style="font-size:20px">💬</div><div style="flex:1"><div style="font-size:14px;color:#333">如何处理醉酒客人？</div><div style="font-size:11px;color:#999;margin-top:2px">2小时前 · 已解决</div></div><div class="hqarrow">›</div></div>
+          <div class="hqitem" onclick="go('s-qa-detail')"><div style="font-size:20px">💬</div><div style="flex:1"><div style="font-size:14px;color:#333">预订系统操作流程是什么？</div><div style="font-size:11px;color:#999;margin-top:2px">昨天 · 已解决</div></div><div class="hqarrow">›</div></div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+      <div class="tabbar">
+        <button class="tabitem" onclick="switchTab('home')"><div class="ticon">🏠</div><div class="tlabel">首页</div></button>
+        <button class="tabitem" onclick="switchTab('courses')"><div class="ticon">📚</div><div class="tlabel">课程</div></button>
+        <button class="tabitem active" onclick="switchTab('qa')"><div class="ticon">🤖</div><div class="tlabel">问答</div></button>
+        <button class="tabitem" onclick="switchTab('role')"><div class="ticon">🎭</div><div class="tlabel">训练</div></button>
+        <button class="tabitem" onclick="switchTab('profile')"><div class="ticon">👤</div><div class="tlabel">我的</div></button>
+      </div>
+    </div>
 
-/* ==================== 通用组件 ==================== */
-const ActionBtn = ({icon,label,onClick}) => (
-  <div className="flex flex-col items-center cursor-pointer active:scale-95 transition-transform" onClick={onClick}>
-    <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center mb-2 shadow-inner">{icon}</div>
-    <span className="text-[11px] text-gray-700 font-medium">{label}</span>
-  </div>
-);
+    <!-- ===== 问答详情（三维导师）===== -->
+    <div class="screen hidden" id="s-qa-detail">
+      <div class="topbar">
+        <button class="backbtn" onclick="back()">‹</button>
+        <div class="toptitle">问题详情</div>
+        <button class="topright">⭐</button>
+      </div>
+      <div class="mentortabs">
+        <button class="mtab active" onclick="switchMentor(0)">🎓 学术导师</button>
+        <button class="mtab" onclick="switchMentor(1)">💼 企业导师</button>
+        <button class="mtab" onclick="switchMentor(2)">🎯 职业规划</button>
+      </div>
+      <div class="scroll">
+        <div class="card" style="margin-top:12px">
+          <div style="font-size:13px;color:#999;margin-bottom:6px">你的问题</div>
+          <div style="font-size:16px;font-weight:600;color:#111">如何处理醉酒客人的突发情况？</div>
+        </div>
+        <div id="mentor-0" class="mcard">
+          <div class="mchd"><div class="mcav" style="background:#e8f0fe">🎓</div><div><div class="mcname">学术导师视角</div><div class="mcrole">理论体系 · 学术规范</div></div></div>
+          <div class="mctext">从心理学与服务管理学角度，醉酒客人的行为往往源于<strong>情绪失控与判断力下降</strong>。处理此类情况需遵循以下理论框架：<br><br><strong>1. 危机干预理论：</strong>保持冷静、建立信任、降低刺激源，避免正面冲突激化情绪。<br><br><strong>2. 服务补救理论：</strong>在保障安全的前提下，通过主动关怀修复服务体验。<br><br><strong>3. 法律合规层面：</strong>酒店有义务对明显醉酒客人采取保护措施，必要时须联系紧急联系人或执法机关。</div>
+          <div class="mclinks"><span class="mclink">危机干预理论</span><span class="mclink">服务补救管理</span><span class="mclink">酒店法律责任</span></div>
+        </div>
+        <div id="mentor-1" class="mcard" style="display:none">
+          <div class="mchd"><div class="mcav" style="background:#e6f9f0">💼</div><div><div class="mcname">企业导师视角</div><div class="mcrole">行业实践 · 操作规范</div></div></div>
+          <div class="mctext">在实际酒店运营中，处理醉酒客人有一套成熟的<strong>SOP标准流程</strong>：<br><br><strong>第一步：</strong>保持距离，用平和语气与客人沟通，不要与其争辩。<br><br><strong>第二步：</strong>立即通知大堂经理或值班主管，由有经验的管理人员介入处理。<br><br><strong>第三步：</strong>为客人提供安静的休息区域、温水，同时联系其同伴或紧急联系人。<br><br><strong>第四步：</strong>全程做好事件记录，填写事故报告表，留存监控证据。</div>
+          <div class="mclinks"><span class="mclink">酒店SOP手册</span><span class="mclink">大堂经理职责</span><span class="mclink">事故处理流程</span></div>
+        </div>
+        <div id="mentor-2" class="mcard" style="display:none">
+          <div class="mchd"><div class="mcav" style="background:#fff4e6">🎯</div><div><div class="mcname">职业规划导师视角</div><div class="mcrole">职业发展 · 求职建议</div></div></div>
+          <div class="mctext">处理突发事件的能力是酒店行业<strong>晋升的核心竞争力</strong>之一。<br><br>• 将此类处理经验整理成<strong>STAR法则案例</strong>，作为面试素材。<br><br>• 主动参与酒店实习中的应急演练，积累真实处置经验。<br><br>• 考取<strong>酒店管理相关资格证书</strong>，系统学习应急管理规范，提升职业竞争力。</div>
+          <div class="mclinks"><span class="mclink">STAR面试法则</span><span class="mclink">酒店职业资格证</span><span class="mclink">实习经验积累</span></div>
+        </div>
+        <div class="card">
+          <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:10px">🔗 相关知识点</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <span class="mclink" onclick="go('s-lesson')">应急预案处理</span>
+            <span class="mclink" onclick="go('s-lesson')">客户心理学</span>
+            <span class="mclink" onclick="go('s-lesson')">投诉处理技巧</span>
+            <span class="mclink" onclick="go('s-role-scene')">去角色训练</span>
+          </div>
+        </div>
+        <div style="padding:0 16px;display:flex;gap:10px;margin-bottom:16px">
+          <button class="btno" onclick="showToast('已收藏 ⭐')">收藏问题</button>
+          <button class="btnp" style="flex:1" onclick="go('s-qa-chat')">继续追问 AI</button>
+        </div>
+      </div>
+    </div>
 
-const NavItem = ({icon,label,active,onClick}) => (
-  <div className={`flex flex-col items-center justify-center w-16 h-full cursor-pointer transition-colors ${active?'text-blue-600':'text-gray-400'}`} onClick={onClick}>
-    <div className={`mb-1 transition-transform duration-300 ${active?'scale-110':''}`}>{icon}</div>
-    <span className={`text-[10px] ${active?'font-bold':'font-medium'}`}>{label}</span>
-  </div>
-);
+    <!-- ===== 问答对话页 ===== -->
+    <div class="screen hidden" id="s-qa-chat">
+      <div class="topbar">
+        <button class="backbtn" onclick="back()">‹</button>
+        <div class="toptitle">AI 对话</div>
+        <button class="topright">🗑️</button>
+      </div>
+      <div class="scroll" style="padding:16px" id="chat-messages">
+        <div class="cbubble">
+          <div class="cbav">🤖</div>
+          <div class="cbcontent"><div class="cbname">AI助手</div><div class="cbtext">你好！我是你的AI学习助手，基于酒店管理专业知识库为你提供专业解答。有什么问题都可以问我～</div></div>
+        </div>
+        <div class="cbubble user">
+          <div class="cbav uav">张</div>
+          <div class="cbcontent"><div class="cbname">我</div><div class="cbtext">如何处理醉酒客人的突发情况？</div></div>
+        </div>
+        <div class="cbubble">
+          <div class="cbav">🤖</div>
+          <div class="cbcontent"><div class="cbname">AI助手</div><div class="cbtext">处理醉酒客人需要遵循以下步骤：<br><br>① <strong>保持冷静</strong>，用平和语气沟通<br>② <strong>立即通知主管</strong>，不要单独处理<br>③ 提供安静休息区域和温水<br>④ 联系客人的同伴或紧急联系人<br>⑤ 做好事件记录和报告</div></div>
+        </div>
+      </div>
+      <div class="traininput">
+        <input class="tiinput" type="text" placeholder="继续追问..." id="chat-input" onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="micbtn" onclick="sendChat()">↑</button>
+      </div>
+    </div>
 
-/* ==================== Mount ==================== */
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App/>);
+    <!-- ===== 角色训练首页 ===== -->
+    <div class="screen hidden" id="s-role-train">
+      <div class="topbar"><div class="toptitle">AI角色训练</div><button class="topright">📊</button></div>
+      <div class="scroll">
+        <div style="background:linear-gradient(135deg,#3B7EF8,#5B5EF8);padding:16px 20px 20px">
+          <div style="font-size:14px;color:rgba(255,255,255,.85);margin-bottom:4px">选择你的训练岗位</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.7)">与AI虚拟角色对话，提升实操能力</div>
+        </div>
+        <div class="rgrid" style="margin-top:12px">
+          <div class="rcard" onclick="go('s-role-scene')"><div class="ricon">🏨</div><div class="rname">前台服务员</div><div class="rdesc">接待入住·处理需求·退房结账</div><span class="tag tb">已训练12次</span></div>
+          <div class="rcard" onclick="go('s-role-scene')"><div class="ricon">🛎️</div><div class="rname">客房服务员</div><div class="rdesc">客房清洁·物品配送·客诉处理</div><span class="tag tg">已训练5次</span></div>
+          <div class="rcard" onclick="go('s-role-scene')"><div class="ricon">🍽️</div><div class="rname">餐厅服务员</div><div class="rdesc">点餐服务·菜品介绍·投诉处理</div><span class="tag to">已训练3次</span></div>
+          <div class="rcard" onclick="showToast('请先完成前三个岗位训练')"><div class="ricon">👔</div><div class="rname">大堂经理</div><div class="rdesc">统筹协调·VIP接待·应急处置</div><span class="tag tr">未解锁</span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="stitle">🏆 我的训练记录</div>
+        <div class="card">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-bottom:12px">
+            <div style="background:#f0f4ff;border-radius:12px;padding:12px 4px"><div style="font-size:20px;font-weight:700;color:#3B7EF8">20</div><div style="font-size:11px;color:#999;margin-top:2px">训练次数</div></div>
+            <div style="background:#e6f9f0;border-radius:12px;padding:12px 4px"><div style="font-size:20px;font-weight:700;color:#22c55e">82</div><div style="font-size:11px;color:#999;margin-top:2px">平均得分</div></div>
+            <div style="background:#fff4e6;border-radius:12px;padding:12px 4px"><div style="font-size:20px;font-weight:700;color:#f97316">3h</div><div style="font-size:11px;color:#999;margin-top:2px">训练时长</div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px;background:#f5f6fa;border-radius:10px;cursor:pointer" onclick="go('s-train-result')"><div><div style="font-size:13px;font-weight:500;color:#111">前台·高峰期接待</div><div style="font-size:11px;color:#999;margin-top:2px">2024-04-18 · 8分钟</div></div><div style="font-size:18px;font-weight:700;color:#22c55e">88分</div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px;background:#f5f6fa;border-radius:10px;cursor:pointer" onclick="go('s-train-result')"><div><div style="font-size:13px;font-weight:500;color:#111">前台·投诉处理</div><div style="font-size:11px;color:#999;margin-top:2px">2024-04-17 · 10分钟</div></div><div style="font-size:18px;font-weight:700;color:#f97316">75分</div></div>
+          </div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+      <div class="tabbar">
+        <button class="tabitem" onclick="switchTab('home')"><div class="ticon">🏠</div><div class="tlabel">首页</div></button>
+        <button class="tabitem" onclick="switchTab('courses')"><div class="ticon">📚</div><div class="tlabel">课程</div></button>
+        <button class="tabitem" onclick="switchTab('qa')"><div class="ticon">🤖</div><div class="tlabel">问答</div></button>
+        <button class="tabitem active" onclick="switchTab('role')"><div class="ticon">🎭</div><div class="tlabel">训练</div></button>
+        <button class="tabitem" onclick="switchTab('profile')"><div class="ticon">👤</div><div class="tlabel">我的</div></button>
+      </div>
+    </div>
+
+    <!-- ===== 场景选择 ===== -->
+    <div class="screen hidden" id="s-role-scene">
+      <div class="topbar">
+        <button class="backbtn" onclick="back()">‹</button>
+        <div class="toptitle">前台服务员 · 选择场景</div>
+      </div>
+      <div class="scroll">
+        <div style="padding:12px 16px;background:#fff;margin-bottom:8px"><div style="font-size:13px;color:#666;line-height:1.6">选择一个训练场景，与AI虚拟客人展开对话练习，训练结束后系统将对你的表现进行评分和反馈。</div></div>
+        <div class="stitle">推荐场景</div>
+        <div class="sliitem" onclick="go('s-training')"><div class="sliicon">🌅</div><div class="slicontent"><div class="slititle">高峰期标准入住接待</div><div class="slimeta"><span>⭐⭐☆☆☆ 基础</span><span>⏱️ 约5分钟</span></div></div><div class="sliarrow">›</div></div
+>
+        <div class="sliitem" onclick="go('s-training')"><div class="sliicon">😤</div><div class="slicontent"><div class="slititle">处理挑剔商务客人</div><div class="slimeta"><span>⭐⭐⭐☆☆ 进阶</span><span>⏱️ 约8分钟</span></div></div><div class="sliarrow">›</div></div>
+        <div class="sliitem" onclick="go('s-training')"><div class="sliicon">👨‍👩‍👧</div><div class="slicontent"><div class="slititle">家庭客人特殊需求接待</div><div class="slimeta"><span>⭐⭐⭐☆☆ 进阶</span><span>⏱️ 约8分钟</span></div></div><div class="sliarrow">›</div></div>
+        <div class="sliitem" onclick="go('s-training')"><div class="sliicon">🌍</div><div class="slicontent"><div class="slititle">外籍客人英语接待</div><div class="slimeta"><span>⭐⭐⭐⭐☆ 困难</span><span>⏱️ 约10分钟</span></div></div><div class="sliarrow">›</div></div>
+        <div class="sliitem" onclick="go('s-training')"><div class="sliicon">😡</div><div class="slicontent"><div class="slititle">投诉型客人危机处理</div><div class="slimeta"><span>⭐⭐⭐⭐⭐ 挑战</span><span>⏱️ 约12分钟</span></div></div><div class="sliarrow">›</div></div>
+        <div style="height:16px"></div>
+      </div>
+    </div>
+
+    <!-- ===== 训练进行中 ===== -->
+    <div class="screen hidden" id="s-training">
+      <div class="topbar">
+        <button class="backbtn" onclick="back()">‹</button>
+        <div class="toptitle">角色训练中</div>
+        <button class="topright" style="font-size:13px;color:#ef4444" onclick="go('s-train-result')">结束</button>
+      </div>
+      <div class="trainscene">
+        <div class="tstitle">🎭 场景：高峰期标准入住接待</div>
+        <div class="tssub">你的角色：前台服务员 · AI扮演：商务客人李先生</div>
+      </div>
+      <div class="chatscroll" id="train-chat">
+        <div class="cbubble" style="margin-bottom:16px">
+          <div class="cbav" style="background:#fff4e6">👔</div>
+          <div class="cbcontent"><div class="cbname">李先生（AI客人）</div><div class="cbtext">你好，我叫李明，在网上预订了一间行政套房，入住3晚。我赶了很长时间的路，有点累了，能快点办理吗？</div></div>
+        </div>
+        <div class="cbubble user" style="margin-bottom:16px">
+          <div class="cbav uav">我</div>
+          <div class="cbcontent"><div class="cbname">我（前台服务员）</div><div class="cbtext">您好，李先生！欢迎光临，很抱歉让您久等了。请问您能提供一下您的预订号或者身份证吗？我马上为您办理。</div></div>
+        </div>
+        <div class="cbubble" style="margin-bottom:16px">
+          <div class="cbav" style="background:#fff4e6">👔</div>
+          <div class="cbcontent"><div class="cbname">李先生（AI客人）</div><div class="cbtext">好的，这是我的身份证。对了，我希望住高楼层、远离电梯的安静房间，这个能安排吗？</div></div>
+        </div>
+        <div style="text-align:center;padding:8px 0;margin-bottom:8px">
+          <span style="background:#f0f4ff;color:#3B7EF8;font-size:12px;padding:4px 12px;border-radius:12px">💡 提示：表达理解客人需求，查询系统后给出方案</span>
+        </div>
+      </div>
+      <div class="traininput">
+        <input class="tiinput" type="text" placeholder="输入你的回应..." id="train-input" onkeydown="if(event.key==='Enter')sendTrainMsg()">
+        <button class="micbtn" id="mic-btn" onclick="toggleMic()">🎙️</button>
+      </div>
+    </div>
+
+    <!-- ===== 训练结果 ===== -->
+    <div class="screen hidden" id="s-train-result">
+      <div class="topbar">
+        <button class="backbtn" onclick="back()">‹</button>
+        <div class="toptitle">训练结果</div>
+        <button class="topright">分享</button>
+      </div>
+      <div class="scroll">
+        <div class="reshd">
+          <div style="font-size:13px;color:rgba(255,255,255,.8);margin-bottom:8px">高峰期标准入住接待</div>
+          <div class="reshdscore">88</div>
+          <div class="reshdlbl">优秀 · 用时7分32秒</div>
+          <div class="reshdbadge">🏆 本次最高分！</div>
+        </div>
+        <div class="card" style="margin-top:12px">
+          <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:14px">📊 各项评分</div>
+          <div class="sitem"><div class="silabel">语言表达</div><div class="sibar"><div class="sifill" style="width:85%;background:linear-gradient(90deg,#22c55e,#16a34a)"></div></div><div class="sinum" style="color:#22c55e">85</div></div>
+          <div class="sitem"><div class="silabel">服务规范</div><div class="sibar"><div class="sifill" style="width:90%;background:linear-gradient(90deg,#22c55e,#16a34a)"></div></div><div class="sinum" style="color:#22c55e">90</div></div>
+          <div class="sitem"><div class="silabel">问题处理</div><div class="sibar"><div class="sifill" style="width:82%;background:linear-gradient(90deg,#3B7EF8,#5B5EF8)"></div></div><div class="sinum" style="color:#3B7EF8">82</div></div>
+          <div class="sitem"><div class="silabel">反应速度</div><div class="sibar"><div class="sifill" style="width:88%;background:linear-gradient(90deg,#22c55e,#16a34a)"></div></div><div class="sinum" style="color:#22c55e">88</div></div>
+          <div class="sitem"><div class="silabel">客户满意度</div><div class="sibar"><div class="sifill" style="width:95%;background:linear-gradient(90deg,#22c55e,#16a34a)"></div></div><div class="sinum" style="color:#22c55e">95</div></div>
+        </div>
+        <div class="card">
+          <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:10px">💡 AI点评</div>
+          <div style="font-size:14px;color:#444;line-height:1.7">整体表现优秀！你的问候语专业、语气温和，能够主动倾听客人需求。<br><br>建议改进：在处理<strong style="color:#f97316">房间资源冲突</strong>时可以更主动地提供备选方案。</div>
+        </div>
+        <div class="card">
+          <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:10px">🏆 获得成就</div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px;background:#fff4e6;border-radius:12px">
+            <div style="font-size:28px">🥇</div>
+            <div><div style="font-size:14px;font-weight:600;color:#111">首次满分客户满意度</div><div style="font-size:12px;color:#999;margin-top:2px">客户满意度评分达到95分以上</div></div>
+          </div>
+        </div>
+        <div style="padding:0 16px 16px;display:flex;gap:10px">
+          <button class="btno" onclick="go('s-role-scene')">换个场景</button>
+          <button class="btnp" style="flex:1" onclick="go('s-training')">再来一次</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 个人中心 ===== -->
+    <div class="screen hidden" id="s-profile">
+      <div class="scroll">
+        <div class="profhd">
+          <div class="phrow">
+            <div class="phav">👤</div>
+            <div><div class="phname">张同学</div><div class="phschool">酒店管理专业 · 大二 · 某某职业技术学院</div></div>
+          </div>
+          <div class="phstats">
+            <div class="phsi"><div class="phsinum">8</div><div class="phsilabel">完成课程</div></div>
+            <div class="phsi"><div class="phsinum">78%</div><div class="phsilabel">平均正确率</div></div>
+            <div class="phsi"><div class="phsinum">20</div><div class="phsilabel">角色训练</div></div>
+            <div class="phsi"><div class="phsinum">7天</div><div class="phsilabel">连续学习</div></div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="stitle">📊 学情报告</div>
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div style="font-size:14px;font-weight:600;color:#111">薄弱知识点</div>
+            <button class="btno" onclick="go('s-report')">查看完整报告</button>
+          </div>
+          <div class="weakitem"><div class="winame">投诉处理</div><div class="wibar"><div class="wifill" style="width:62%;background:#ef4444"></div></div><div class="wipct" style="color:#ef4444">62%</div></div>
+          <div class="weakitem"><div class="winame">应急预案</div><div class="wibar"><div class="wifill" style="width:68%;background:#f97316"></div></div><div class="wipct" style="color:#f97316">68%</div></div>
+          <div class="weakitem"><div class="winame">客户心理学</div><div class="wibar"><div class="wifill" style="width:75%;background:#3B7EF8"></div></div><div class="wipct" style="color:#3B7EF8">75%</div></div>
+          <div class="weakitem"><div class="winame">前台接待</div><div class="wibar"><div class="wifill" style="width:88%;background:#22c55e"></div></div><div class="wipct" style="color:#22c55e">88%</div></div>
+        </div>
+        <div class="divider"></div>
+        <div class="stitle">💼 招聘推荐</div>
+        <div class="jobcard" onclick="go('s-jobs')">
+          <div class="jobhd"><div class="joblogo" style="background:linear-gradient(135deg,#667eea,#764ba2)">🏨</div><div class="jobinfo"><div class="jobname">前台实习生</div><div class="jobco">希尔顿酒店 · 上海</div></div><div class="jobsalary">3500-4500元</div></div>
+          <div class="jobtags"><span class="tag tb">匹配度92%</span><span class="tag tg">实习</span><span class="tag to">五星级</span></div>
+        </div>
+        <div class="jobcard" onclick="go('s-jobs')">
+          <div class="jobhd"><div class="joblogo" style="background:linear-gradient(135deg,#f093fb,#f5576c)">🏨</div><div class="jobinfo"><div class="jobname">客房服务员</div><div class="jobco">万豪酒店 · 北京</div></div><div class="jobsalary">3200-4200元</div></div>
+          <div class="jobtags"><span class="tag tb">匹配度85%</span><span class="tag tg">全职</span><span class="tag to">五星级</span></div>
+        </div>
+        <button class="btno" style="margin:0 16px 12px;width:calc(100% - 32px)" onclick="go('s-jobs')">查看全部招聘机会</button>
+        <div class="divider"></div>
+        <div class="stitle">🏆 我的成就</div>
+        <div class="card">
+          <div class="achieveitem"><div class="aicon">🥇</div><div><div class="aname">学习达人</div><div class="adesc">连续学习7天</div></div><span class="tag tg">已获得</span></div>
+          <div class="achieveitem"><div class="aicon">🥈</div><div><div class="aname">高分获得者</div><div class="adesc">单次测验达到85分以上</div></div><span class="tag tg">已获得</span></div>
+          <div class="achieveitem"><div class="aicon">🥉</div><div><div class="aname">训练达人</div><div class="adesc">完成20次角色训练</div></div><span class="tag tg">已获得</span></div>
+          <div class="achieveitem"><div class="aicon">🎯</div><div><div class="aname">全科优秀</div><div class="adesc">所有课程正确率达到85%</div></div><span class="tag to">进行中</span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="stitle">⚙️ 设置</div>
+        <div style="background:#fff;border-radius:16px;margin:0 16px 12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05)">
+          <div class="menuitem" onclick="showToast('功能开发中')"><div class="miicon" style="background:#e8f0fe">🔔</div><div class="micontent"><div class="mititle">消息通知</div></div><div class="miarrow">›</div></div>
+          <div class="menuitem" onclick="showToast('功能开发中')"><div class="miicon" style="background:#e6f9f0">📖</div><div class="micontent"><div class="mititle">学习偏好设置</div></div><div class="miarrow">›</div></div>
+          <div class="menuitem" onclick="showToast('功能开发中')"><div class="miicon" style="background:#fff4e6">🔒</div><div class="micontent"><div class="mititle">账户与安全</div></div><div class="miarrow">›</div></div>
+          <div class="menuitem" onclick="showToast('功能开发中')"><div class="miicon" style="background:#fff0f0">📞</div><div class="micontent"><div class="mititle">联系客服</div><div class="misub">7×12小时在线支持</div></div><div class="miarrow">›</div></div>
+          <div class="menuitem" onclick="showToast('功能开发中')"><div class="miicon" style="background:#f5f6fa">ℹ️</div><div class="micontent"><div class="mititle">关于我们</div><div class="misub">版本 v1.0.0</div></div><div class="miarrow">›</div></div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+      <div class="tabbar">
+        <button class="tabitem" onclick="switchTab('home')"><div class="ticon">🏠</div><div class="tlabel">首页</div></button>
+        <button class="tabitem" onclick="switchTab('courses')"><div class="ticon">📚</div><div class="tlabel">课程</div></button>
+        <button class="tabitem" onclick="switchTab('qa')"><div class="ticon">🤖</div><div class="tlabel">问答</div></button>
+        <button class="tabitem" onclick="switchTab('role')"><div class="ticon">🎭</div><div class="tlabel">训练</div></button>
+        <button class="tabitem active" onclick="switchTab('profile')"><div class="ticon">👤</div><div class="tlabel">我的</div></button>
+      </div>
+    </div>
+
+    <!-- ===== 学情报告 ===== -->
+    <div class="screen hidden" id="s-report">
+      <div class="topbar">
+        <button class="backbtn" onclick="back()">‹</button>
+        <div class="toptitle">我的学情报告</div>
+        <button class="topright">导出</button>
+      </div>
+      <div class="scroll">
+        <div class="card" style="margin-top:12px">
+          <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:12px">📈 成绩趋势（最近7天）</div>
+          <div style="height:80px;background:#f5f6fa;border-radius:12px;display:flex;align-items:flex-end;padding:8px 12px;gap:6px;margin-bottom:8px">
+            <div style="flex:1;background:linear-gradient(180deg,#3B7EF8,#5B5EF8);border-radius:4px 4px 0 0;height:65%"></div>
+            <div style="flex:1;background:linear-gradient(180deg,#3B7EF8,#5B5EF8);border-radius:4px 4px 0 0;height:72%"></div>
+            <div style="flex:1;background:linear-gradient(180deg,#3B7EF8,#5B5EF8);border-radius:4px 4px 0 0;height:68%"></div>
+            <div style="flex:1;background:linear-gradient(180deg,#3B7EF8,#5B5EF8);border-radius:4px 4px 0 0;height:78%"></div>
+            <div style="flex:1;background:linear-gradient(180deg,#3B7EF8,#5B5EF8);border-radius:4px 4px 0 0;height:75%"></div>
+            <div style="flex:1;background:linear-gradient(180deg,#3B7EF8,#5B5EF8);border-radius:4px 4px 0 0;height:82%"></div>
+            <div style="flex:1;background:linear-gradient(180deg,#22c55e,#16a34a);border-radius:4px 4px 0 0;height:88%"></div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:12px">
+            <div style="flex:1;text-align:center;background:#f0f4ff;border-radius:10px;padding:10px"><div style="font-size:18px;font-weight:700;color:#3B7EF8">88</div><div style="font-size:11px;color:#999">最高分</div></div>
+            <div style="flex:1;text-align:center;background:#f5f6fa;border-radius:10px;padding:10px"><div style="font-size:18px;font-weight:700;color:#111">79</div><div style="font-size:11px;color:#999">平均分</div></div>
+            <div style="flex:1;text-align:center;background:#fff0f0;border-radius:10px;padding:10px"><div style="font-size:18px;font-weight:700;color:#ef4444">62</div><div style="font-size:11px;color:#999">最低分</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:12px">📚 各课程掌握情况</div>
+          <div class="weakitem"><div class="winame">前台接待</div><div class="wibar" style="width:100px"><div class="wifill" style="width:88%;background:#22c55e"></div></div><div class="wipct" style="color:#22c55e">88%</div></div>
+          <div class="weakitem"><div class="winame">客房管理</div><div class="wibar" style="width:100px"><div class="wifill" style="width:78%;background:#3B7EF8"></div></div><div class="wipct" style="color:#3B7EF8">78%</div></div>
+          <div class="weakitem"><div class="winame">餐饮运营</div><div class="wibar" style="width:100px"><div class="wifill" style="width:75%;background:#3B7EF8"></div></div><div class="wipct" style="color:#3B7EF8">75%</div></div>
+          <div class="weakitem"><div class="winame">投诉处理</div><div class="wibar" style="width:100px"><div class="wifill" style="width:62%;background:#ef4444"></div></div><div class="wipct" style="color:#ef4444">62%</div></div>
+          <div class="weakitem"><div class="winame">应急预案</div><div class="wibar" style="width:100px"><div class="wifill" style="width:68%;background:#f97316"></div></div><div class="wipct" style="color:#f97316">68%</div></div>
+          <div class="weakitem"><div class="winame">酒店营销</div><div class="wibar" style="width:100px"><div class="wifill" style="width:70%;background:#3B7EF8"></div></div><div class="wipct" style="color:#3B7EF8">70%</div></div>
+        </div>
+        <div style="padding:0 16px 16px"><button class="btnp" onclick="go('s-quiz-doing')">针对薄弱点强化练习</button></div>
+      </div>
+    </div>
+
+    <!-- ===== 招聘推荐 ===== -->
+    <div class="screen hidden" id="s-jobs">
+      <div class="topbar">
+        <button class="backbtn" onclick="back()">‹</button>
+        <div class="toptitle">招聘推荐</div>
+        <button class="topright">🔍</button>
+      </div>
+      <div class="scroll">
+        <div style="background:linear-gradient(135deg,#3B7EF8,#5B5EF8);padding:14px 16px"><div style="font-size:13px;color:rgba(255,255,255,.85)">根据你的学习数据与技能评估，为你智能匹配以下岗位</div></div>
+        <div style="display:flex;gap:8px;padding:12px 16px;overflow-x:auto;background:#fff;border-bottom:1px solid #f0f0f0">
+          <button class="btns">全部</button>
+          <button class="btno">实习岗位</button>
+          <button class="btno">全职岗位</button>
+          <button class="btno">五星级酒店</button>
+        </div>
+        <div style="padding:12px 16px 4px;font-size:13px;color:#666">共找到 <strong style="color:#3B7EF8">12</strong> 个匹配岗位</div>
+        <div class="jobcard">
+          <div class="jobhd"><div class="joblogo" style="background:linear-gradient(135deg,#667eea,#764ba2)">🏨</div><div class="jobinfo"><div class="jobname">前台实习生</div><div class="jobco">希尔顿酒店 · 上海浦东</div></div><div class="jobsalary">3500-4500元</div></div>
+          <div class="jobtags" style="margin-bottom:12px"><span class="tag tb">匹配度92%</span><span class="tag tg">实习</span><span class="tag to">五星级</span><span class="tag" style="background:#f5f6fa;color:#666">包住</span></div>
+          <button class="btnp" onclick="showToast('投递成功！简历已发送 ✅')">立即投递</button>
+        </div>
+        <div class="jobcard">
+          <div class="jobhd"><div class="joblogo" style="background:linear-gradient(135deg,#f093fb,#f5576c)">🏨</div><div class="jobinfo"><div class="jobname">客房服务员</div><div class="jobco">万豪酒店 · 北京朝阳</div></div><div class="jobsalary">3200-4200元</div></div>
+          <div class="jobtags" style="margin-bottom:12px"><span class="tag tb">匹配度85%</span><span class="tag tg">全职</span><span class="tag to">五星级</span></div>
+          <button class="btnp" onclick="showToast('投递成功！简历已发送 ✅')">立即投递</button>
+        </div>
+        <div class="jobcard">
+          <div class="jobhd"><div class="joblogo" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">🏨</div><div class="jobinfo"><div class="jobname">餐厅服务员</div><div class="jobco">洲际酒店 · 广州天河</div></div><div class="jobsalary">3000-3800元</div></div>
+          <div class="jobtags" style="margin-bottom:12px"><span class="tag tb">匹配度80%</span><span class="tag tg">实习</span><span class="tag" style="background:#f5f6fa;color:#666">包餐</span></div>
+          <button class="btnp" onclick="showToast('投递成功！简历已发送 ✅')">立即投递</button>
+        </div>
+        <div class="jobcard">
+          <div class="jobhd"><div class="joblogo" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">🏨</div><div class="jobinfo"><div class="jobname">大堂接待员</div><div class="jobco">凯悦酒店 · 深圳南山</div></div><div class="jobsalary">3800-5000元</div></div>
+          <div class="jobtags" style="margin-bottom:12px"><span class="tag tb">匹配度78%</span><span class="tag tg">全职</span><span class="tag to">五星级</span><span class="tag" style="background:#f5f6fa;color:#666">五险一金</span></div>
+          <button class="btnp" onclick="showToast('投递成功！简历已发送 ✅')">立即投递</button>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let history = [];
+let currentScreen = 's-home';
+let currentTab = 'home';
+const tabScreenMap = {home:'s-home',courses:'s-courses',qa:'s-qa',role:'s-role-train',profile:'s-profile'};
+
+function go(screenId) {
+  if (screenId === currentScreen) return;
+  const cur = document.getElementById(currentScreen);
+  const next = document.getElementById(screenId);
+  if (!next) return;
+  cur.classList.add('hidden');
+  next.classList.remove('hidden');
+  history.push(currentScreen);
+  currentScreen = screenId;
+}
+
+function back() {
+  if (history.length === 0) return;
+  const prev = history.pop();
+  const cur = document.getElementById(currentScreen);
+  const prevEl = document.getElementById(prev);
+  if (!prevEl) return;
+  cur.classList.add('hidden');
+  prevEl.classList.remove('hidden');
+  currentScreen = prev;
+}
+
+function switchTab(tab) {
+  if (currentTab === tab && currentScreen === tabScreenMap[tab]) return;
+  document.getElementById(currentScreen).classList.add('hidden');
+  history = [];
+  currentTab = tab;
+  const nextId = tabScreenMap[tab];
+  document.getElementById(nextId).classList.remove('hidden');
+  currentScreen = nextId;
+  const tabOrder = ['home','courses','qa','role','profile'];
+  const idx = tabOrder.indexOf(tab);
+  document.querySelectorAll('.tabbar').forEach(bar => {
+    bar.querySelectorAll('.tabitem').forEach((item, i) => {
+      item.classList.toggle('active', i === idx);
+    });
+  });
+}
+
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function showStep(idx) {
+  for (let i = 0; i < 4; i++) {
+    const el = document.getElementById('step-' + i);
+    if (el) el.style.display = i === idx ? 'block' : 'none';
+  }
+  document.querySelectorAll('.stepbtn').forEach((b, i) => {
+    b.classList.remove('active', 'done');
+    if (i < idx) b.classList.add('done');
+    if (i === idx) b.classList.add('active');
+  });
+  const ls = document.getElementById('lesson-scroll');
+  if (ls) ls.scrollTop = 0;
+}
+
+let lessonAnswered = false;
+function selectOpt(el, letter) {
+  if (lessonAnswered) return;
+  document.querySelectorAll('#step-2 .optitem').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  el._letter = letter;
+}
+
+function submitOpt() {
+  if (lessonAnswered) { showStep(3); return; }
+  const sel = document.querySelector('#step-2 .optitem.sel');
+  if (!sel) { showToast('请先选择一个答案'); return; }
+  lessonAnswered = true;
+  if (sel._letter === 'B') {
+    sel.classList.remove('sel'); sel.classList.add('ok');
+    document.getElementById('fb-1').style.display = 'block';
+  } else {
+    sel.classList.remove('sel'); sel.classList.add('err');
+    document.querySelectorAll('#step-2 .optitem').forEach(o => { if (o._letter === 'B') o.classList.add('ok'); });
+    document.getElementById('fb-1-wrong').style.display = 'block';
+  }
+  const btn = document.getElementById('lesson-submit-btn');
+  if (btn) btn.textContent = '查看总结 →';
+}
+
+let quizSelected = null, quizSubmitted = false;
+function selectQuizOpt(letter) {
+  if (quizSubmitted) return;
+  quizSelected = letter;
+  ['A','B','C','D'].forEach(l => {
+    const el = document.getElementById('qopt-' + l);
+    if (el) el.classList.toggle('sel', l === letter);
+  });
+}
+
+function submitQuiz() {
+  if (!quizSelected) { showToast('请先选择一个答案'); return; }
+  if (quizSubmitted) { go('s-quiz-result'); return; }
+  quizSubmitted = true;
+  const fb = document.getElementById('quiz-feedback');
+  if (quizSelected === 'B') {
+    document.getElementById('qopt-B').classList.remove('sel');
+    document.getElementById('qopt-B').classList.add('ok');
+  } else {
+    document.getElementById('qopt-' + quizSelected).classList.remove('sel');
+    document.getElementById('qopt-' + quizSelected).classList.add('err');
+    document.getElementById('qopt-B').classList.add('ok');
+    fb.querySelector('.fbbox').className = 'fbbox fberr';
+    fb.querySelector('.fbtitle').textContent = '❌ 答案有误';
+    fb.querySelector('.fbtext').textContent = '正确答案是 B。遇到客人投诉时，应先真诚道歉缓解情绪，再了解具体情况，最后提供针对性解决方案。';
+  }
+  fb.style.display = 'block';
+  const btn = document.getElementById('quiz-submit-btn');
+  if (btn) btn.textContent = '下一题 →';
+}
+
+function switchMentor(idx) {
+  [0,1,2].forEach(i => {
+    const el = document.getElementById('mentor-' + i);
+    if (el) el.style.display = i === idx ? 'block' : 'none';
+  });
+  document.querySelectorAll('.mtab').forEach((t, i) => t.classList.toggle('active', i === idx));
+}
+
+function goQaDetail() {
+  const input = document.getElementById('qa-input');
+  go((input && input.value.trim()) ? 's-qa-chat' : 's-qa-detail');
+}
+
+function sendChat() {
+  const input = document.getElementById('chat-input');
+  if (!input || !input.value.trim()) return;
+  const msg = input.value.trim();
+  input.value = '';
+  const area = document.getElementById('chat-messages');
+  const userBubble = document.createElement('div');
+  userBubble.className = 'cbubble user';
+  userBubble.innerHTML = '<div class="cbav uav">张</div><div class="cbcontent"><div class="cbname">我</div><div class="cbtext">' + msg + '</div></div>';
+  area.appendChild(userBubble);
+  area.scrollTop = area.scrollHeight;
+  setTimeout(() => {
+    const aiBubble = document.createElement('div');
+    aiBubble.className = 'cbubble';
+    aiBubble.innerHTML = '<div class="cbav">🤖</div><div class="cbcontent"><div class="cbname">AI 助手</div><div class="cbtext">这是一个很好的问题！根据酒店管理专业知识库，建议你同时参考三维导师的不同视角，会有更全面的理解。</div></div>';
+    area.appendChild(aiBubble);
+    area.scrollTop = area.scrollHeight;
+  }, 800);
+}
+
+let micRecording = false;
+function toggleMic() {
+  const btn = document.getElementById('mic-btn');
+  micRecording = !micRecording;
+  if (micRecording) {
+    btn.classList.add('rec'); btn.textContent = '⏹️';
+    showToast('录音中，再次点击发送');
+  } else {
+    btn.classList.remove('rec'); btn.textContent = '🎙️';
+    sendTrainMsg();
+  }
+}
+
+function sendTrainMsg() {
+  const input = document.getElementById('train-input');
+  const msg = (input && input.value.trim()) ? input.value.trim() : '好的，我马上为您查询符合要求的房间，请稍等片刻。';
+  if (input) input.value = '';
+  const area = document.getElementById('train-chat');
+  if (!area) return;
+  const userBubble = document.createElement('div');
+  userBubble.className = 'cbubble user';
+  userBubble.style.marginBottom = '16px';
+  userBubble.innerHTML = '<div class="cbav uav">我</div><div class="cbcontent"><div class="cbname">我（前台服务员）</div><div class="cbtext">' + msg + '</div></div>';
+  area.appendChild(userBubble);
+  area.scrollTop = area.scrollHeight;
+  setTimeout(() => {
+    const aiBubble = document.createElement('div');
+    aiBubble.className = 'cbubble';
+    aiBubble.style.marginBottom = '16px';
+    aiBubble.innerHTML = '<div class="cbav" style="background:#fff4e6">👔</div><div class="cbcontent"><div class="cbname">李先生（AI 客人）</div><div class="cbtext">好的，麻烦你了。对了，我是金卡会员，有什么额外的服务可以享受吗？</div></div>';
+    area.appendChild(aiBubble);
+    area.scrollTop = area.scrollHeight;
+  }, 1000);
+}
+
+function updateTime() {
+  const now = new Date();
+  const el = document.querySelector('.statusbar .time');
+  if (el) el.textContent = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+}
+
+updateTime();
+setInterval(updateTime, 10000);
+document.addEventListener('DOMContentLoaded', () => { showStep(1); });
 </script>
 </body>
 </html>
+
